@@ -367,6 +367,7 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
           reason: '臨床處置、病患照護與寫病歷',
           status: 'pending',
           source: 'auto',
+          shiftCode: shiftCode,
         });
       });
     }

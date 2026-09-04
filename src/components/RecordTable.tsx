@@ -217,14 +217,19 @@ export const RecordTable: React.FC<RecordTableProps> = ({
                     </td>
                     {/* Date */}
                     <td className="py-3 px-3 font-mono font-semibold text-blue-600">
-                      <input
-                        type="date"
-                        value={r.date}
-                        onChange={(e) =>
-                          setRecords(records.map((item) => (item.id === r.id ? { ...item, date: e.target.value } : item)))
-                        }
-                        className="bg-transparent border-0 focus:ring-1 focus:ring-blue-600 rounded px-1 py-0.5"
-                      />
+                      <div className="flex flex-col">
+                        <input
+                          type="date"
+                          value={r.date}
+                          onChange={(e) =>
+                            setRecords(records.map((item) => (item.id === r.id ? { ...item, date: e.target.value } : item)))
+                          }
+                          className="bg-transparent border-0 focus:ring-1 focus:ring-blue-600 rounded px-1 py-0.5"
+                        />
+                        <span className="text-[10px] text-neutral-400 pl-1 font-sans">
+                          {r.source === 'auto' && r.shiftCode ? `班別: ${r.shiftCode}` : (r.source === 'custom' ? '自訂' : '')}
+                        </span>
+                      </div>
                     </td>
                     {/* Start Time (0000) */}
                     <td className="py-3 px-3 font-mono text-neutral-700">

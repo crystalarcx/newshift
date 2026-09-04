@@ -10,6 +10,7 @@ export interface OvertimeRecord {
   reason: string;
   status: 'pending' | 'sending' | 'success' | 'failed';
   source?: 'auto' | 'custom';
+  shiftCode?: string;
   responseMessage?: string;
   submittedAt?: string;
 }
