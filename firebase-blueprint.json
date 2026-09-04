@@ -1,0 +1,25 @@
+{
+  "collections": {
+    "schedules": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "lastUpdated": { "type": "timestamp" },
+          "records": {
+            "type": "array",
+            "items": { "type": "map" }
+          },
+          "shiftSchedule": {
+            "type": "map"
+          },
+          "targetMonth": { "type": "string" }
+        },
+        "required": ["lastUpdated"]
+      },
+      "securityRules": {
+        "read": "true",
+        "write": "true"
+      }
+    }
+  }
+}
