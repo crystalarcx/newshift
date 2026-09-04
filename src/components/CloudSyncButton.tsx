@@ -43,11 +43,21 @@ export const CloudSyncButton: React.FC<CloudSyncButtonProps> = ({ records, setRe
       const docSnap = await getDoc(doc(db, 'schedules', 'global_schedule'));
       if (docSnap.exists()) {
         const data = docSnap.data();
-        if (data.records && Array.isArray(data.records)) {
-          setRecords(data.records);
-          alert(`下載成功！已載入 ${data.records.length} 筆紀錄。`);
+        
+        // 更穩健的陣列檢查與預設值
+        const recordsToLoad = Array.isArray(data.records) ? data.records : [];
+        
+        if (recordsToLoad.length > 0) {
+          setRecords(recordsToLoad);
+          alert(`下載成功！已載入 ${recordsToLoad.length} 筆紀錄。`);
+        } else if (data.records && !Array.isArray(data.records)) {
+          // 如果 data.records 存在但不是陣列，嘗試將其轉換或報錯
+           console.warn('雲端資料格式異常:', data.records);
+           alert('雲端資料格式異常，請重新上傳。');
         } else {
-          alert('雲端無有效的班表資料。');
+           // 真的是空陣列
+           setRecords([]);
+           alert('下載成功！但雲端目前為空紀錄 (0 筆)。');
         }
       } else {
         alert('雲端尚無班表資料，請先上傳。');
