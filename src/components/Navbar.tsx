@@ -1,7 +1,6 @@
 import React from 'react';
 import { Clock, FileSpreadsheet, Code } from 'lucide-react';
 import { OvertimeRecord } from '../types';
-import { CloudSyncButton } from './CloudSyncButton';
 
 interface NavbarProps {
   activeTab: 'generator' | 'script';
@@ -44,7 +43,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
           
           <div className="hidden lg:flex items-center space-x-4">
-            <CloudSyncButton records={records} setRecords={setRecords} />
             <div className="flex items-center space-x-4 bg-neutral-50 px-4 py-1.5 rounded-lg border border-neutral-200 text-xs">
               <div className="flex items-center space-x-1.5 text-neutral-600">
                 <FileSpreadsheet className="w-4 h-4 text-neutral-400" />
@@ -63,9 +61,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           <nav className="flex items-center space-x-1">
-            <div className="lg:hidden mr-2">
-              <CloudSyncButton records={records} setRecords={setRecords} />
-            </div>
             <button
               onClick={() => setActiveTab('generator')}
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1.5 ${

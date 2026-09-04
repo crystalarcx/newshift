@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { OvertimeRecord, OvertimeType } from '../types';
-import { Calendar, Plus, Zap, CheckSquare, Square, Clock, AlertCircle, FileText, Sparkles, Filter, Upload, X } from 'lucide-react';
+import { Calendar, Plus, Zap, CheckSquare, Square, Clock, AlertCircle, FileText, Sparkles, Filter, Upload, X, CloudUpload, CloudDownload, Loader2 } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 interface BatchGeneratorProps {
   records: OvertimeRecord[];
@@ -40,6 +42,66 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
   const [encoding, setEncoding] = useState('utf-8');
   const [shiftSchedule, setShiftSchedule] = useState<Record<string, string>>({});
   const [importStatus, setImportStatus] = useState<{ type: 'idle' | 'success' | 'error', message: string }>({ type: 'idle', message: '' });
+  
+  const [isUploading, setIsUploading] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleUploadExcelToCloud = async () => {
+    if (csvData.length < 3) {
+      setImportStatus({ type: 'error', message: '請先選擇並成功讀取 Excel 檔案！' });
+      return;
+    }
+    const password = window.prompt('請輸入全院班表上傳密碼：');
+    if (password !== 'A30825ER') {
+      if (password !== null) alert('密碼錯誤！');
+      return;
+    }
+    setIsUploading(true);
+    setImportStatus({ type: 'idle', message: '正在上傳全院班表至雲端...' });
+    try {
+      // JSON stringify the 2D array to bypass Firestore array/field limitations easily
+      const compressedData = JSON.stringify(csvData);
+      await setDoc(doc(db, 'schedules', 'global_schedule'), {
+        lastUpdated: new Date().toISOString(),
+        csvData: compressedData,
+      });
+      setImportStatus({ type: 'success', message: '全院班表上傳雲端成功！其他同仁現在可以透過人事號帶入班表了。' });
+    } catch (error) {
+      console.error('Upload failed:', error);
+      setImportStatus({ type: 'error', message: '上傳失敗，請檢查網路連線或設定。' });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleDownloadExcelFromCloud = async () => {
+    setIsDownloading(true);
+    setImportStatus({ type: 'idle', message: '正在從雲端下載最新全院班表...' });
+    try {
+      const docSnap = await getDoc(doc(db, 'schedules', 'global_schedule'));
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.csvData) {
+          const parsedCsv = JSON.parse(data.csvData);
+          if (Array.isArray(parsedCsv) && parsedCsv.length > 0) {
+            setCsvData(parsedCsv);
+            setImportStatus({ type: 'success', message: '雲端班表下載成功！請在右方輸入人事號帶入月曆。' });
+          } else {
+            setImportStatus({ type: 'error', message: '雲端班表格式異常。' });
+          }
+        } else {
+          setImportStatus({ type: 'error', message: '雲端尚無有效的班表資料。' });
+        }
+      } else {
+        setImportStatus({ type: 'error', message: '雲端尚無班表資料，請先上傳。' });
+      }
+    } catch (error) {
+      console.error('Download failed:', error);
+      setImportStatus({ type: 'error', message: '下載失敗，請檢查網路連線。' });
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   useEffect(() => {
     if (!csvFile) {
@@ -437,37 +499,53 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
       <div className="mt-5 bg-white border border-neutral-200 rounded-xl p-4 flex flex-col gap-3 shadow-sm">
         <div className="flex items-center gap-2">
           <Upload className="w-4 h-4 text-emerald-600" />
-          <h4 className="text-xs font-bold text-neutral-800">匯入班表 (Excel)</h4>
-          <span className="text-[10px] text-neutral-400 font-normal ml-2">上傳排班表 Excel 檔，自動帶入當月班表代號</span>
+          <h4 className="text-xs font-bold text-neutral-800">取得全院班表 (Excel)</h4>
+          <span className="text-[10px] text-neutral-400 font-normal ml-2">上傳排班表 Excel 檔，或從雲端下載最新班表</span>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+        <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center flex-wrap">
           <input 
             type="file" 
             accept=".csv, .xlsx, .xls"
             onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
-            className="text-xs text-neutral-600 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer"
+            className="text-xs text-neutral-600 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer w-48"
           />
-          <select
-            value={encoding}
-            onChange={(e) => setEncoding(e.target.value)}
-            className="text-xs border border-neutral-300 rounded px-1.5 py-1 focus:outline-none focus:border-emerald-500"
-            title="檔案編碼 (若為亂碼可嘗試切換)"
+          
+          <div className="h-4 w-px bg-neutral-300 hidden sm:block mx-1" />
+
+          <button
+            type="button"
+            onClick={handleUploadExcelToCloud}
+            disabled={isUploading || csvData.length < 3}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-50 transition disabled:opacity-50"
+            title="將目前選取的 Excel 發布至雲端"
           >
-            <option value="utf-8">UTF-8</option>
-            <option value="big5">Big5 (舊版 Excel)</option>
-          </select>
-          <div className="flex items-center gap-2 ml-auto">
+            {isUploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <CloudUpload className="w-3 h-3" />}
+            上傳至雲端
+          </button>
+          
+          <button
+            type="button"
+            onClick={handleDownloadExcelFromCloud}
+            disabled={isDownloading}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 transition disabled:opacity-50"
+          >
+            {isDownloading ? <Loader2 className="w-3 h-3 animate-spin" /> : <CloudDownload className="w-3 h-3" />}
+            從雲端下載班表
+          </button>
+
+          <div className="flex items-center gap-2 sm:ml-auto w-full sm:w-auto mt-2 sm:mt-0 p-2 sm:p-0 bg-neutral-50 sm:bg-transparent rounded border border-neutral-200 sm:border-transparent">
+            <span className="text-xs font-bold text-neutral-700">擷取個人班表:</span>
             <input 
               type="text" 
               placeholder="輸入人事號"
               value={employeeId}
               onChange={(e) => setEmployeeId(e.target.value)}
-              className="bg-neutral-50 border border-neutral-300 rounded px-2 py-1 text-xs focus:outline-none focus:border-emerald-500 w-28 uppercase"
+              className="bg-white border border-neutral-300 rounded px-2 py-1 text-xs focus:outline-none focus:border-emerald-500 w-24 uppercase"
             />
             <button 
               type="button"
               onClick={handleExtractSchedule}
-              disabled={!csvFile || !employeeId}
+              disabled={csvData.length < 3 || !employeeId}
               className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1 rounded transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               帶入月曆
