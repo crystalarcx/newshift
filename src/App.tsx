@@ -24,11 +24,12 @@ export default function App() {
     localStorage.removeItem('chimei_overtime_records'); // Clean up old data
     sessionStorage.removeItem('chimei_overtime_records'); // Clean up old data
     
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-
-    return () => unsubscribe();
+    if (auth) {
+      const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        setUser(currentUser);
+      });
+      return () => unsubscribe();
+    }
   }, []);
 
   const handleAddRecords = (newRecords: OvertimeRecord[]) => {

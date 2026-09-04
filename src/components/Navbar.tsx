@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, FileSpreadsheet, Code, LogIn, LogOut, Loader2 } from 'lucide-react';
+import { Clock, FileSpreadsheet, Code, LogIn, LogOut, Loader2, Banknote } from 'lucide-react';
 import { OvertimeRecord } from '../types';
 import { auth, provider } from '../lib/firebase';
 import { signInWithPopup, signOut } from 'firebase/auth';
@@ -30,6 +30,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [isAuthLoading, setIsAuthLoading] = useState(false);
 
   const handleLogin = async () => {
+    if (!auth) {
+      alert("Firebase 尚未正確設定或環境變數遺失。");
+      return;
+    }
     setIsAuthLoading(true);
     try {
       await signInWithPopup(auth, provider);
@@ -42,6 +46,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   const handleLogout = async () => {
+    if (!auth) return;
     setIsAuthLoading(true);
     try {
       await signOut(auth);
@@ -58,7 +63,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-              <Clock className="w-6 h-6 text-blue-600" />
+              <Banknote className="w-6 h-6 text-blue-600" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
