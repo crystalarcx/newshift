@@ -107,8 +107,8 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
       } else {
         setImportStatus({ type: 'error', message: '雲端尚無班表資料，請先上傳。' });
       }
-    } catch (error) {
-      console.error('Download failed:', error);
+    } catch (error: any) {
+      console.warn('Download failed (network issue or offline):', error.message || error);
       setImportStatus({ type: 'error', message: '下載失敗，請檢查網路連線。' });
     } finally {
       setIsDownloading(false);
