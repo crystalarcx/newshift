@@ -100,6 +100,7 @@ export default function App() {
             weekendHours={weekendHours}
             employeeId={employeeId}
             setEmployeeId={setEmployeeId}
+            user={user}
           />
         )}
 
