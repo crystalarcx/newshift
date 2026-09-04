@@ -24,7 +24,7 @@ try {
   db = getFirestore(app);
   auth = getAuth(app);
 } catch (error) {
-  console.error("Firebase 初始化失敗，請檢查環境變數是否正確：", error);
+  // console.error("Firebase 初始化失敗，請檢查環境變數是否正確：", error);
 }
 
 export { db, auth, provider };

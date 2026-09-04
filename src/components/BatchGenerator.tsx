@@ -49,6 +49,10 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
   const [isDownloading, setIsDownloading] = useState(false);
 
   const handleUploadExcelToCloud = async () => {
+    if (!db) {
+      alert('Firebase 未正確設定，無法上傳班表。');
+      return;
+    }
     if (!user) {
       alert('請先在右上角登入 Google 帳號，才能上傳全院班表。');
       return;
@@ -78,6 +82,10 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
   };
 
   const handleDownloadExcelFromCloud = async () => {
+    if (!db) {
+      setImportStatus({ type: 'error', message: 'Firebase 未正確設定，無法下載班表。' });
+      return;
+    }
     setIsDownloading(true);
     setImportStatus({ type: 'idle', message: '正在從雲端下載最新全院班表...' });
     try {
@@ -106,6 +114,11 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
       setIsDownloading(false);
     }
   };
+
+  useEffect(() => {
+    // 初次載入時自動從雲端下載班表
+    handleDownloadExcelFromCloud();
+  }, []);
 
   useEffect(() => {
     if (!csvFile) {
@@ -402,7 +415,7 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
   const [activeDateModal, setActiveDateModal] = useState<string | null>(null);
   const [customHours, setCustomHours] = useState('2');
   const [customStartTime, setCustomStartTime] = useState('1730');
-  const [customReasonType, setCustomReasonType] = useState('處置病人、會診與病歷撰寫');
+  const [customReasonType, setCustomReasonType] = useState('診療病患、判讀報告');
   const [customReasonText, setCustomReasonText] = useState('');
 
   const handleDateClick = (dateStr: string) => {
@@ -757,7 +770,7 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
                         onChange={e => setCustomReasonType(e.target.value)} 
                         className="w-full border border-neutral-300 rounded-lg p-2.5 text-sm bg-neutral-50 mb-2 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition outline-none text-neutral-800"
                       >
-                        <option value="處置病人、會診與病歷撰寫">處置病人、會診與病歷撰寫</option>
+                        <option value="診療病患、判讀報告">診療病患、判讀報告</option>
                         <option value="開會">開會</option>
                         <option value="自訂">自訂...</option>
                       </select>
