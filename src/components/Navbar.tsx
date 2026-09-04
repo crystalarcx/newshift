@@ -1,6 +1,8 @@
-import React from 'react';
-import { Clock, FileSpreadsheet, Code } from 'lucide-react';
+import React, { useState } from 'react';
+import { Clock, FileSpreadsheet, Code, LogIn, LogOut, Loader2 } from 'lucide-react';
 import { OvertimeRecord } from '../types';
+import { auth, provider } from '../lib/firebase';
+import { signInWithPopup, signOut } from 'firebase/auth';
 
 interface NavbarProps {
   activeTab: 'generator' | 'script';
@@ -11,6 +13,7 @@ interface NavbarProps {
   weekendHours: number;
   records: OvertimeRecord[];
   setRecords: (records: OvertimeRecord[]) => void;
+  user: any;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -22,7 +25,33 @@ export const Navbar: React.FC<NavbarProps> = ({
   weekendHours,
   records,
   setRecords,
+  user,
 }) => {
+  const [isAuthLoading, setIsAuthLoading] = useState(false);
+
+  const handleLogin = async () => {
+    setIsAuthLoading(true);
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert("登入失敗，請稍後再試");
+    } finally {
+      setIsAuthLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    setIsAuthLoading(true);
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setIsAuthLoading(false);
+    }
+  };
+
   return (
     <header className="bg-white border-b border-neutral-200 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -60,7 +89,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </div>
 
-          <nav className="flex items-center space-x-1">
+          <nav className="flex items-center space-x-2 ml-4">
             <button
               onClick={() => setActiveTab('generator')}
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1.5 ${
@@ -83,6 +112,40 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Code className={`w-4 h-4 ${activeTab === 'script' ? 'text-blue-600' : ''}`} />
               <span>網頁腳本</span>
             </button>
+
+            <div className="h-6 w-px bg-neutral-200 mx-1 hidden sm:block"></div>
+
+            {user ? (
+              <div className="flex items-center space-x-3 bg-neutral-50 border border-neutral-200 rounded-full pl-1.5 pr-3 py-1">
+                {user.photoURL ? (
+                  <img src={user.photoURL} alt="Profile" className="w-6 h-6 rounded-full" />
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 text-xs font-bold">
+                    {user.email?.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <span className="text-xs font-medium text-neutral-700 truncate max-w-[100px] hidden md:block">
+                  {user.displayName || user.email?.split('@')[0]}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  disabled={isAuthLoading}
+                  className="text-neutral-400 hover:text-red-600 transition"
+                  title="登出"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={handleLogin}
+                disabled={isAuthLoading}
+                className="flex items-center space-x-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50"
+              >
+                {isAuthLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogIn className="w-4 h-4" />}
+                <span className="hidden sm:inline">Google 登入</span>
+              </button>
+            )}
           </nav>
         </div>
       </div>

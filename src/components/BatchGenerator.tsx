@@ -3,7 +3,7 @@ import { OvertimeRecord, OvertimeType } from '../types';
 import { Calendar, Plus, Zap, CheckSquare, Square, Clock, AlertCircle, FileText, Sparkles, Filter, Upload, X, CloudUpload, CloudDownload, Loader2 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { db, auth } from '../lib/firebase';
 
 interface BatchGeneratorProps {
   records: OvertimeRecord[];
@@ -15,6 +15,7 @@ interface BatchGeneratorProps {
   weekendHours: number;
   employeeId: string;
   setEmployeeId: (id: string) => void;
+  user: any;
 }
 
 export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
@@ -27,6 +28,7 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
   weekendHours,
   employeeId,
   setEmployeeId,
+  user,
 }) => {
   const [overtimeType, setOvertimeType] = useState<OvertimeType>('延時加班');
   
@@ -47,15 +49,16 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
   const [isDownloading, setIsDownloading] = useState(false);
 
   const handleUploadExcelToCloud = async () => {
+    if (!user) {
+      alert('請先在右上角登入 Google 帳號，才能上傳全院班表。');
+      return;
+    }
+
     if (csvData.length < 3) {
       setImportStatus({ type: 'error', message: '請先選擇並成功讀取 Excel 檔案！' });
       return;
     }
-    const password = window.prompt('請輸入全院班表上傳密碼：');
-    if (password !== 'A30825ER') {
-      if (password !== null) alert('密碼錯誤！');
-      return;
-    }
+    
     setIsUploading(true);
     setImportStatus({ type: 'idle', message: '正在上傳全院班表至雲端...' });
     try {
@@ -68,7 +71,7 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
       setImportStatus({ type: 'success', message: '全院班表上傳雲端成功！其他同仁現在可以透過人事號帶入班表了。' });
     } catch (error) {
       console.error('Upload failed:', error);
-      setImportStatus({ type: 'error', message: '上傳失敗，請檢查網路連線或設定。' });
+      setImportStatus({ type: 'error', message: '上傳失敗，請檢查權限或網路連線。' });
     } finally {
       setIsUploading(false);
     }

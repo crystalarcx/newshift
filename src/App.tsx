@@ -4,6 +4,8 @@ import { Navbar } from './components/Navbar';
 import { BatchGenerator } from './components/BatchGenerator';
 import { RecordTable } from './components/RecordTable';
 import { BookmarkletScriptModal } from './components/BookmarkletScriptModal';
+import { auth } from './lib/firebase';
+import { onAuthStateChanged, User } from 'firebase/auth';
 
 export default function App() {
   const today = new Date();
@@ -15,10 +17,18 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState<'generator' | 'script'>('generator');
   const [isScriptModalOpen, setIsScriptModalOpen] = useState(false);
+  
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     localStorage.removeItem('chimei_overtime_records'); // Clean up old data
     sessionStorage.removeItem('chimei_overtime_records'); // Clean up old data
+    
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const handleAddRecords = (newRecords: OvertimeRecord[]) => {
@@ -74,6 +84,7 @@ export default function App() {
         weekendHours={weekendHours}
         records={records}
         setRecords={setRecords}
+        user={user}
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
