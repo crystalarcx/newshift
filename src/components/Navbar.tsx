@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, FileSpreadsheet, Code, LogIn, LogOut, Loader2, Banknote } from 'lucide-react';
+import { Clock, FileSpreadsheet, Code, LogIn, LogOut, Loader2, Coins } from 'lucide-react';
 import { OvertimeRecord } from '../types';
 import { auth, provider } from '../lib/firebase';
 import { signInWithPopup, signOut } from 'firebase/auth';
@@ -63,7 +63,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-              <Banknote className="w-6 h-6 text-blue-600" />
+              <Coins className="w-6 h-6 text-blue-600" />
             </div>
             <div>
               <div className="flex items-center space-x-2">

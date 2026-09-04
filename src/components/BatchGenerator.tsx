@@ -524,7 +524,7 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
             title="將目前選取的 Excel 發布至雲端"
           >
             {isUploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <CloudUpload className="w-3 h-3" />}
-            上傳至雲端
+            上傳至雲端 <span className="opacity-75">(管理者限定)</span>
           </button>
           
           <button
