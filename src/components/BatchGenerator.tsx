@@ -88,7 +88,8 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
           const parsedCsv = JSON.parse(data.csvData);
           if (Array.isArray(parsedCsv) && parsedCsv.length > 0) {
             setCsvData(parsedCsv);
-            setImportStatus({ type: 'success', message: '雲端班表下載成功！請在右方輸入人事號帶入月曆。' });
+            const previewText = data.csvData.substring(0, 15).replace(/[[\]"]/g, '') + '...';
+            setImportStatus({ type: 'success', message: `雲端班表下載成功！(版本預覽: ${previewText}) 請在右方輸入人事號帶入月曆。` });
           } else {
             setImportStatus({ type: 'error', message: '雲端班表格式異常。' });
           }

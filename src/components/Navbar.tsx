@@ -67,7 +67,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   v2.0
                 </span>
               </div>
-              <p className="text-xs text-neutral-500">專為院內同仁設計 · 月度加班快速登錄</p>
             </div>
           </div>
           
