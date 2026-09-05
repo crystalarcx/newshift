@@ -20,7 +20,15 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
 
   if (!isOpen) return null;
 
+  const isWeekend = (dateStr: string) => {
+    const day = new Date(dateStr).getDay();
+    return day === 0 || day === 6;
+  };
+
   const validRecords = records.filter((r) => r.status !== 'success');
+  
+  const weekdayHours = validRecords.filter(r => !isWeekend(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
+  const weekendHours = validRecords.filter(r => isWeekend(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
 
   // Generate JavaScript Code payload to inject into chimei page
   const generateJsCode = () => {
@@ -264,9 +272,19 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
                 <FileCode className="w-4 h-4 text-blue-600" />
                 準備匯出的資料
               </h3>
-              <div className="flex items-center justify-between text-xs bg-neutral-50 p-4 rounded-lg border border-neutral-200 mb-2">
-                <span className="text-neutral-600 font-medium">待發送記錄數：</span>
-                <span className="font-bold text-blue-600 text-base">{validRecords.length} 筆</span>
+              <div className="flex flex-col gap-2 bg-neutral-50 p-4 rounded-lg border border-neutral-200 mb-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-neutral-600 font-medium">待發送記錄數：</span>
+                  <span className="font-bold text-blue-600 text-base">{validRecords.length} 筆</span>
+                </div>
+                <div className="flex items-center justify-between text-xs border-t border-neutral-200 pt-2">
+                  <span className="text-neutral-600 font-medium">平日時數：</span>
+                  <span className="font-bold text-neutral-800">{weekdayHours} h</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-neutral-600 font-medium">假日時數：</span>
+                  <span className="font-bold text-neutral-800">{weekendHours} h</span>
+                </div>
               </div>
               {validRecords.length === 0 && (
                 <p className="text-xs text-red-500 flex items-center gap-1.5 mt-3 font-medium bg-red-50 p-2 rounded-md border border-red-100">

@@ -83,6 +83,7 @@ export const RecordTable: React.FC<RecordTableProps> = ({
           <h2 className="text-lg font-bold text-neutral-900 flex items-center gap-2">
             <FileSpreadsheet className="w-5 h-5 text-blue-600" />
             <span>
+              <span className="text-blue-600 mr-2">Step 3:</span>
               {targetMonth} 本月份申報明細清單
             </span>
             <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-100">
@@ -90,7 +91,7 @@ export const RecordTable: React.FC<RecordTableProps> = ({
             </span>
           </h2>
           <p className="text-xs text-neutral-500 mt-1">
-            資料儲存於瀏覽器中，準備好後可點擊右側按鈕批次發送
+            微調、修改事由或刪除，可一次勾選多筆修改事由或刪除。
           </p>
         </div>
 
@@ -103,7 +104,7 @@ export const RecordTable: React.FC<RecordTableProps> = ({
             className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-lg shadow-blue-600/20 transition flex items-center space-x-1.5"
           >
             <Sparkles className="w-4 h-4" />
-            <span>產生網頁自動填表書籤</span>
+            <span>Step 4: 產生網頁自動填表書籤</span>
           </button>
 
           {selectedIds.length > 0 && (

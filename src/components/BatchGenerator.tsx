@@ -552,7 +552,7 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
           </button>
 
           <div className="flex items-center gap-2 sm:ml-auto w-full sm:w-auto mt-2 sm:mt-0 p-2 sm:p-0 bg-neutral-50 sm:bg-transparent rounded border border-neutral-200 sm:border-transparent">
-            <span className="text-xs font-bold text-neutral-700">擷取個人班表:</span>
+            <span className="text-xs font-bold text-neutral-700"><span className="text-blue-600 mr-1">Step 1:</span>擷取個人班表:</span>
             <input 
               type="text" 
               placeholder="輸入人事號"
@@ -587,7 +587,7 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
             <div className="flex flex-col gap-1">
               <span className="text-xs font-semibold text-neutral-800 flex items-center gap-1.5">
                 <Calendar className="w-4 h-4 text-blue-600" />
-                自動帶入日期(藍底) ({targetMonth})
+                <span className="text-blue-600 mr-1">Step 2:</span>自動帶入日期(藍底) / 新增自訂日期(橘底) ({targetMonth})
               </span>
               <div className="flex items-center gap-2 text-[10px] text-neutral-500 pl-5">
                 <span>目前時數預估：</span>
