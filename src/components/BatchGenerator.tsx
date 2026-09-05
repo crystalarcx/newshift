@@ -772,6 +772,7 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
                         className="w-full border border-neutral-300 rounded-lg p-2.5 text-sm bg-neutral-50 mb-2 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition outline-none text-neutral-800"
                       >
                         <option value="診療病患、判讀報告">診療病患、判讀報告</option>
+                        <option value="撰寫病歷">撰寫病歷</option>
                         <option value="開會">開會</option>
                         <option value="自訂">自訂...</option>
                       </select>

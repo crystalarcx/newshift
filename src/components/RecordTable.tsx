@@ -103,7 +103,7 @@ export const RecordTable: React.FC<RecordTableProps> = ({
             className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-lg shadow-blue-600/20 transition flex items-center space-x-1.5"
           >
             <Sparkles className="w-4 h-4" />
-            <span>產生網頁自動填表書籤 (100% 成功)</span>
+            <span>產生網頁自動填表書籤</span>
           </button>
 
           {selectedIds.length > 0 && (
@@ -216,16 +216,9 @@ export const RecordTable: React.FC<RecordTableProps> = ({
                       </button>
                     </td>
                     {/* Date */}
-                    <td className="py-3 px-3 font-mono font-semibold text-blue-600">
+                    <td className="py-3 px-3 font-mono font-semibold text-blue-600 whitespace-nowrap">
                       <div className="flex flex-col">
-                        <input
-                          type="date"
-                          value={r.date}
-                          onChange={(e) =>
-                            setRecords(records.map((item) => (item.id === r.id ? { ...item, date: e.target.value } : item)))
-                          }
-                          className="bg-transparent border-0 focus:ring-1 focus:ring-blue-600 rounded px-1 py-0.5"
-                        />
+                        <span className="px-1 py-0.5">{r.date}</span>
                         <span className="text-[10px] text-neutral-400 pl-1 font-sans">
                           {r.source === 'auto' && r.shiftCode ? `班別: ${r.shiftCode}` : (r.source === 'custom' ? '自訂' : '')}
                         </span>
