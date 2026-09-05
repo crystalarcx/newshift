@@ -364,7 +364,7 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
           endTime: t.end,
           hours: Number(hrs.toFixed(1)),
           type: overtimeType,
-          reason: '臨床處置、病患照護與寫病歷',
+          reason: '臨床處置、病患照護',
           status: 'pending',
           source: 'auto',
           shiftCode: shiftCode,
@@ -471,7 +471,7 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
       endTime: endTimeStr,
       hours: addedHrs,
       type: overtimeType,
-      reason: finalReason || '臨床處置、病患照護與寫病歷',
+      reason: finalReason || '臨床處置、病患照護',
       status: 'pending',
       source: 'custom',
     };
