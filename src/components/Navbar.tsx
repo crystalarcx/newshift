@@ -94,31 +94,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           <nav className="flex items-center space-x-2 ml-4">
-            <button
-              onClick={() => setActiveTab('generator')}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1.5 ${
-                activeTab === 'generator'
-                  ? 'bg-neutral-100 text-neutral-900'
-                  : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'
-              }`}
-            >
-              <FileSpreadsheet className="w-4 h-4" />
-              <span className="hidden sm:inline">規則產生</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('script')}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1.5 ${
-                activeTab === 'script'
-                  ? 'bg-blue-50 text-blue-700'
-                  : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'
-              }`}
-            >
-              <Code className={`w-4 h-4 ${activeTab === 'script' ? 'text-blue-600' : ''}`} />
-              <span>網頁腳本</span>
-            </button>
-
-            <div className="h-6 w-px bg-neutral-200 mx-1 hidden sm:block"></div>
-
             {user ? (
               <div className="flex items-center space-x-3 bg-neutral-50 border border-neutral-200 rounded-full pl-1.5 pr-3 py-1">
                 {user.photoURL ? (

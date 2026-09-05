@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { OvertimeRecord, OvertimeType } from '../types';
-import { Calendar, Plus, Zap, CheckSquare, Square, Clock, AlertCircle, FileText, Sparkles, Filter, Upload, X, CloudUpload, CloudDownload, Loader2 } from 'lucide-react';
+import { Calendar, Plus, Printer, CheckSquare, Square, Clock, AlertCircle, FileText, Sparkles, Filter, Upload, X, CloudUpload, CloudDownload, Loader2 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
@@ -485,7 +485,7 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-neutral-200">
         <div className="flex items-center space-x-3">
           <div className="p-2.5 rounded-xl bg-blue-50 border border-blue-100 text-blue-600">
-            <Zap className="w-5 h-5" />
+            <Printer className="w-5 h-5" />
           </div>
           <div>
             <h3 className="text-base font-bold text-neutral-900 flex items-center gap-2">
