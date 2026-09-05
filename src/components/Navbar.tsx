@@ -141,14 +141,21 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
               </div>
             ) : (
-              <button
-                onClick={handleLogin}
-                disabled={isAuthLoading}
-                className="flex items-center space-x-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50"
-              >
-                {isAuthLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogIn className="w-4 h-4" />}
-                <span className="hidden sm:inline">Google 登入</span>
-              </button>
+              <div className="flex items-center space-x-2">
+                <div className="hidden md:flex flex-col items-end text-[10px] leading-tight text-neutral-500">
+                  <span className="font-semibold text-amber-600">管理者限定</span>
+                  <span>一般使用者無須登入</span>
+                </div>
+                <button
+                  onClick={handleLogin}
+                  disabled={isAuthLoading}
+                  className="flex items-center space-x-1.5 px-3 py-1.5 bg-neutral-100 text-neutral-700 border border-neutral-200 rounded-lg text-sm font-medium hover:bg-neutral-200 transition disabled:opacity-50"
+                  title="Google 登入 (管理者限定)"
+                >
+                  {isAuthLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogIn className="w-4 h-4" />}
+                  <span className="hidden sm:inline">登入</span>
+                </button>
+              </div>
             )}
           </nav>
         </div>
