@@ -491,9 +491,6 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
             <h3 className="text-base font-bold text-neutral-900 flex items-center gap-2">
               加班單批次產生器
             </h3>
-            <p className="text-xs text-neutral-500">
-              勾選月份日曆與加班時間範本，自動產生整個月份的加班申報明細
-            </p>
           </div>
         </div>
 
