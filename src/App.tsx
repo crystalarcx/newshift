@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Lock } from 'lucide-react';
 import { OvertimeRecord } from './types';
 import { Navbar } from './components/Navbar';
 import { BatchGenerator } from './components/BatchGenerator';
@@ -19,6 +20,23 @@ export default function App() {
   const [isScriptModalOpen, setIsScriptModalOpen] = useState(false);
   
   const [user, setUser] = useState<User | null>(null);
+
+  const [hasAccess, setHasAccess] = useState(() => {
+    return localStorage.getItem('app_access_granted') === 'true';
+  });
+  const [passwordInput, setPasswordInput] = useState('');
+  const [passwordError, setPasswordError] = useState(false);
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordInput === '7900') {
+      setHasAccess(true);
+      localStorage.setItem('app_access_granted', 'true');
+    } else {
+      setPasswordError(true);
+      setPasswordInput('');
+    }
+  };
 
   useEffect(() => {
     localStorage.removeItem('chimei_overtime_records'); // Clean up old data
@@ -68,6 +86,46 @@ export default function App() {
   const totalHours = currentMonthRecords.reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
   const weekdayHours = currentMonthRecords.filter(r => !isWeekend(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
   const weekendHours = currentMonthRecords.filter(r => isWeekend(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
+
+  if (!hasAccess) {
+    return (
+      <div className="min-h-screen bg-neutral-50 flex flex-col items-center justify-center p-4 font-sans">
+        <div className="bg-white p-8 rounded-2xl shadow-xl max-w-sm w-full text-center border border-neutral-200">
+          <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-5 text-blue-600">
+            <Lock className="w-8 h-8" />
+          </div>
+          <h1 className="text-xl font-bold text-neutral-900 mb-2">請輸入存取密碼</h1>
+          <p className="text-sm text-neutral-500 mb-6">為避免流量超載，請輸入通關密碼以進入系統。</p>
+          <form onSubmit={handlePasswordSubmit}>
+            <input
+              type="password"
+              value={passwordInput}
+              onChange={(e) => {
+                setPasswordInput(e.target.value);
+                setPasswordError(false);
+              }}
+              placeholder="請輸入密碼"
+              className={`w-full text-center px-4 py-3 rounded-xl border ${
+                passwordError 
+                  ? 'border-red-300 focus:border-red-500 focus:ring-red-200 bg-red-50' 
+                  : 'border-neutral-200 focus:border-blue-500 focus:ring-blue-200'
+              } transition-all outline-none focus:ring-4 mb-4`}
+              autoFocus
+            />
+            {passwordError && (
+              <p className="text-sm text-red-500 mb-4 font-medium">密碼錯誤，請重新輸入</p>
+            )}
+            <button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-blue-600/20"
+            >
+              進入系統
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-neutral-50 text-neutral-900 flex flex-col font-sans selection:bg-blue-100 selection:text-blue-900">
