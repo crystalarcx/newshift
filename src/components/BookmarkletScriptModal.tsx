@@ -228,7 +228,7 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
 
   const hasEmployeeId = Boolean(employeeId.trim());
   const targetUserId = hasEmployeeId ? employeeId.trim() : '【請先輸入人事號】';
-  const displayUrl = `https://www.chimei.org.tw/overwork/index1.htm?ihosp=10&iuser=${targetUserId}&CC=MdgQMdgQ10V=QQ`;
+  const displayUrl = `https://www.chimei.org.tw/overwork/index5.htm?ihosp=10&iuser=${targetUserId}&CC=MdgQMdgQ10V=QQ&mode=`;
   const loginUrl = hasEmployeeId ? displayUrl : '#';
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
