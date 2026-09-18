@@ -300,44 +300,68 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
                 執行步驟說明
               </h3>
               
-              <ol className="list-decimal list-inside space-y-4 text-sm text-neutral-700">
-                <li>
-                  <span className="font-semibold text-neutral-900">拖曳按鈕至書籤列</span>
-                  <div className="mt-2 p-3 bg-neutral-50 border border-blue-200 rounded-lg flex justify-center items-center">
-                    <div className="flex items-center space-x-3">
+              <div className="space-y-4">
+                {/* Step 1 */}
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="bg-blue-600 text-white font-black text-xs px-3 py-1 rounded-lg shadow-sm">執行腳本步驟 1</span>
+                    <span className="text-base font-bold text-blue-900">顯示瀏覽器書籤列</span>
+                  </div>
+                  <p className="text-sm text-blue-800 ml-[104px]">
+                    如果您沒看到書籤列，請按鍵盤 <strong className="bg-blue-200/60 px-1.5 py-0.5 rounded text-blue-900">Ctrl + Shift + B</strong> (Mac 為 <strong className="bg-blue-200/60 px-1.5 py-0.5 rounded text-blue-900">Cmd + Shift + B</strong>) 將其顯示。
+                  </p>
+                </div>
+
+                {/* Step 2 */}
+                <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="bg-indigo-600 text-white font-black text-xs px-3 py-1 rounded-lg shadow-sm">執行腳本步驟 2</span>
+                    <span className="text-base font-bold text-indigo-900">拖曳下方按鈕至書籤列</span>
+                  </div>
+                  <div className="ml-[104px]">
+                    <div className="p-4 bg-white border-2 border-dashed border-indigo-300 rounded-xl flex justify-center items-center shadow-sm">
                       <span
                         dangerouslySetInnerHTML={{
-                          __html: `<a href="${bookmarkletHref}" onclick="event.preventDefault()" class="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white font-extrabold text-xs rounded-xl shadow-lg cursor-grab active:cursor-grabbing border border-blue-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
+                          __html: `<a href="${bookmarkletHref}" onclick="event.preventDefault()" class="inline-flex items-center space-x-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-700 transition-colors text-white font-extrabold text-sm rounded-xl shadow-lg cursor-grab active:cursor-grabbing border border-indigo-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
                             <span>拖曳我至書籤列：奇美加班一鍵填寫</span>
                           </a>`
                         }}
                       />
                     </div>
                   </div>
-                  <p className="text-xs text-neutral-500 mt-2 pl-5">
-                    按住上方按鈕往上拖曳到瀏覽器「書籤列」(Bookmark bar) 放開。(沒看到請按 Ctrl+Shift+B 顯示)
+                </div>
+
+                {/* Step 3 */}
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="bg-amber-500 text-white font-black text-xs px-3 py-1 rounded-lg shadow-sm">執行腳本步驟 3</span>
+                    <span className="text-base font-bold text-amber-900">開啟並登入奇美加班網頁</span>
+                  </div>
+                  <p className="text-sm text-amber-900 ml-[104px] mt-1">
+                    <a
+                      href={loginUrl}
+                      onClick={handleLinkClick}
+                      target={hasEmployeeId ? "_blank" : undefined}
+                      rel="noreferrer"
+                      className="text-amber-700 hover:text-amber-900 underline font-mono break-all font-bold bg-amber-200/50 px-2 py-1 rounded inline-block"
+                    >
+                      {displayUrl}
+                    </a>
                   </p>
-                </li>
-                <li className="pt-2 border-t border-neutral-100">
-                  <span className="font-semibold text-neutral-900">開啟並登入奇美加班網頁：</span>
-                  <a
-                    href={loginUrl}
-                    onClick={handleLinkClick}
-                    target={hasEmployeeId ? "_blank" : undefined}
-                    rel="noreferrer"
-                    className="text-blue-600 underline font-mono ml-1 break-all mt-1 inline-block"
-                  >
-                    {displayUrl}
-                  </a>
-                </li>
-                <li className="pt-2 border-t border-neutral-100">
-                  <span className="font-semibold text-neutral-900">點擊書籤，自動執行！</span>
-                  <p className="text-xs text-neutral-500 mt-1 pl-5">
-                    點擊剛才加入書籤列的書籤，程式就會開始自動逐一填入並送出。
+                </div>
+
+                {/* Step 4 */}
+                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="bg-emerald-600 text-white font-black text-xs px-3 py-1 rounded-lg shadow-sm">執行腳本步驟 4</span>
+                    <span className="text-base font-bold text-emerald-900">點擊書籤，自動執行！</span>
+                  </div>
+                  <p className="text-sm text-emerald-800 ml-[104px]">
+                    在加班網頁中，點擊剛才加入書籤列的<strong className="text-emerald-900">「奇美加班一鍵填寫」</strong>書籤，程式就會自動逐筆幫您填入資料。
                   </p>
-                </li>
-              </ol>
+                </div>
+              </div>
             </div>
           </div>
 

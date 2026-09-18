@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, ShieldCheck, Info, MonitorSmartphone } from 'lucide-react';
+import { Lock, ShieldCheck, Info, MonitorSmartphone, X } from 'lucide-react';
 import { OvertimeRecord } from './types';
 import { Navbar } from './components/Navbar';
 import { BatchGenerator } from './components/BatchGenerator';
@@ -9,6 +9,9 @@ import { auth } from './lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 
 export default function App() {
+  const [showMobileNotice, setShowMobileNotice] = useState(true);
+  const [showSecurityNotice, setShowSecurityNotice] = useState(true);
+  
   const today = new Date();
   const defaultMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
   const [targetMonth, setTargetMonth] = useState<string>(defaultMonth);
@@ -147,37 +150,58 @@ export default function App() {
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 sm:p-5 flex gap-4">
-          <div className="flex-shrink-0 mt-0.5">
-            <MonitorSmartphone className="w-6 h-6 text-amber-600" />
-          </div>
-          <div className="flex-1">
-            <h2 className="text-sm sm:text-base font-bold text-amber-900 mb-1">
-              使用裝置提醒
-            </h2>
-            <p className="text-xs sm:text-sm text-amber-800 leading-relaxed">
-              因網頁腳本機制之限制，本系統<strong>目前不支援手機操作</strong>。為了確保您能順利進行加班明細申報，請務必使用<strong>電腦版網頁瀏覽器 (如 Chrome, Edge 等) </strong>來開啟並使用本系統。
-            </p>
-          </div>
-        </div>
-
-        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 sm:p-5 flex gap-4">
-          <div className="flex-shrink-0 mt-0.5">
-            <ShieldCheck className="w-6 h-6 text-blue-600" />
-          </div>
-          <div className="flex-1">
-            <h2 className="text-sm sm:text-base font-bold text-blue-900 mb-1">
-              關於網頁腳本的運作原理與安全性聲明
-            </h2>
-            <div className="text-xs sm:text-sm text-blue-800 space-y-2 leading-relaxed">
-              <p>
-                <strong>運作原理：</strong>本系統是透過產生一段「網頁腳本 (JavaScript)」，讓您在醫院的加班網頁中執行。這段腳本的功能，僅是代替您的滑鼠與鍵盤，幫您自動「點擊對應日期」與「填寫加班時間」，以省去手動逐筆輸入的麻煩。
-              </p>
-              <p>
-                <strong>資安保障：</strong>使用本服務<strong>沒有任何安全性顧慮</strong>。所有加班資料的處理與腳本的執行，都完全在您的個人電腦（瀏覽器）上進行。本系統不會、也無法攔截您的醫院登入帳號密碼。
-              </p>
+        
+        <div className="space-y-4">
+          {showMobileNotice && (
+            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 sm:p-5 flex gap-4 relative pr-10 shadow-sm">
+              <div className="flex-shrink-0 mt-0.5">
+                <MonitorSmartphone className="w-6 h-6 text-amber-600" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-sm sm:text-base font-bold text-amber-900 mb-1">
+                  使用裝置提醒
+                </h2>
+                <p className="text-xs sm:text-sm text-amber-800 leading-relaxed">
+                  因網頁腳本機制之限制，本系統<strong>目前不支援手機操作</strong>。為了確保您能順利進行加班明細申報，請務必使用<strong>電腦版網頁瀏覽器 (如 Chrome, Edge 等) </strong>來開啟並使用本系統。
+                </p>
+              </div>
+              <button 
+                onClick={() => setShowMobileNotice(false)}
+                className="absolute top-4 right-4 text-amber-400 hover:text-amber-700 transition bg-amber-100/50 hover:bg-amber-200/50 rounded-full p-1"
+                aria-label="關閉提示"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
-          </div>
+          )}
+
+          {showSecurityNotice && (
+            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 sm:p-5 flex gap-4 relative pr-10 shadow-sm">
+              <div className="flex-shrink-0 mt-0.5">
+                <ShieldCheck className="w-6 h-6 text-blue-600" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-sm sm:text-base font-bold text-blue-900 mb-1">
+                  關於網頁腳本的運作原理與安全性聲明
+                </h2>
+                <div className="text-xs sm:text-sm text-blue-800 space-y-2 leading-relaxed">
+                  <p>
+                    <strong>運作原理：</strong>本系統是透過產生一段「網頁腳本 (JavaScript)」，讓您在醫院的加班網頁中執行。這段腳本的功能，僅是代替您的滑鼠與鍵盤，幫您自動「點擊對應日期」與「填寫加班時間」，以省去手動逐筆輸入的麻煩。
+                  </p>
+                  <p>
+                    <strong>資安保障：</strong>使用本服務<strong>沒有任何安全性顧慮</strong>。所有加班資料的處理與腳本的執行，都完全在您的個人電腦（瀏覽器）上進行。本系統不會、也無法攔截您的醫院登入帳號密碼。
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowSecurityNotice(false)}
+                className="absolute top-4 right-4 text-blue-400 hover:text-blue-700 transition bg-blue-100/50 hover:bg-blue-200/50 rounded-full p-1"
+                aria-label="關閉提示"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
 
         {activeTab === 'generator' && (

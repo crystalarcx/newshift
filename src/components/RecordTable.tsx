@@ -14,6 +14,7 @@ import {
   CheckSquare,
   Square,
   Filter,
+  Calendar,
 } from 'lucide-react';
 
 interface RecordTableProps {
@@ -80,31 +81,32 @@ export const RecordTable: React.FC<RecordTableProps> = ({
       {/* Table Header & Summary Cards */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-neutral-200 mb-5">
         <div>
-          <h2 className="text-lg font-bold text-neutral-900 flex items-center gap-2">
-            <FileSpreadsheet className="w-5 h-5 text-blue-600" />
-            <span>
-              <span className="text-blue-600 mr-2">Step 3:</span>
-              {targetMonth} 本月份申報明細清單
-            </span>
-            <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-100">
-              共 {monthRecords.length} 筆
-            </span>
-          </h2>
-          <p className="text-xs text-neutral-500 mt-1">
+          <div className="flex items-center gap-3 mb-2 bg-amber-50 border border-amber-200 px-3 py-2 rounded-xl w-fit">
+            <span className="bg-amber-500 text-white font-black text-sm px-3 py-1 rounded-lg shadow-sm">STEP 3</span>
+            <h2 className="text-lg font-bold text-amber-900 flex items-center gap-2">
+              <FileSpreadsheet className="w-5 h-5" />
+              <span>{targetMonth} 本月份申報明細清單</span>
+              <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-bold border border-amber-300 ml-2">
+                共 {monthRecords.length} 筆
+              </span>
+            </h2>
+          </div>
+          <p className="text-xs text-neutral-500 mt-1 pl-2">
             微調、修改事由或刪除，可一次勾選多筆修改事由或刪除。
           </p>
         </div>
 
-        <div className="flex items-center flex-wrap gap-2">
+        <div className="flex items-center flex-wrap gap-2 mt-4 lg:mt-0">
           {/* Script Generator Button */}
           <button
             id="open-script-generator-btn"
             type="button"
             onClick={onOpenScriptModal}
-            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-lg shadow-blue-600/20 transition flex items-center space-x-1.5"
+            className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition flex items-center space-x-2 border border-emerald-700 hover:border-emerald-600 group"
           >
+            <span className="bg-white text-emerald-700 font-black text-xs px-2.5 py-0.5 rounded-md shadow-sm group-hover:bg-emerald-50 transition-colors">完成</span>
             <Sparkles className="w-4 h-4" />
-            <span>Step 4: 產生網頁自動填表書籤</span>
+            <span>產生腳本與教學</span>
           </button>
 
           {selectedIds.length > 0 && (
@@ -161,9 +163,12 @@ export const RecordTable: React.FC<RecordTableProps> = ({
 
       {/* Table */}
       {monthRecords.length === 0 ? (
-        <div className="py-16 text-center text-neutral-400 text-xs flex flex-col items-center">
-          <Clock className="w-10 h-10 mb-2 stroke-1 text-neutral-400" />
-          <span>目前本月份尚無加班明細，請點擊上方「規則快速產生」自動建立</span>
+        <div className="flex flex-col items-center justify-center py-16 px-4 text-center bg-neutral-50/50 rounded-2xl border-2 border-dashed border-neutral-200">
+          <div className="bg-amber-50 p-4 rounded-full mb-4 ring-8 ring-amber-50/50">
+            <Calendar className="w-8 h-8 text-amber-500" />
+          </div>
+          <h3 className="text-base font-bold text-neutral-800 mb-1">目前沒有需要匯出的資料</h3>
+          <p className="text-neutral-500 text-sm font-medium">請先在上方 <strong className="text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">STEP 2 月曆</strong> 點選加班的日期喔！</p>
         </div>
       ) : (
         <div className="overflow-x-auto">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { OvertimeRecord, OvertimeType } from '../types';
-import { Calendar, Plus, Printer, CheckSquare, Square, Clock, AlertCircle, FileText, Sparkles, Filter, Upload, X, CloudUpload, CloudDownload, Loader2 } from 'lucide-react';
+import { Calendar, Plus, Printer, CheckSquare, Square, Clock, AlertCircle, FileText, Sparkles, Filter, Upload, X, CloudUpload, CloudDownload, Loader2, Settings } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
@@ -47,6 +47,7 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
   
   const [isUploading, setIsUploading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [showAdminTools, setShowAdminTools] = useState(false);
 
   const handleUploadExcelToCloud = async () => {
     if (!db) {
@@ -511,62 +512,74 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
       </div>
       
       {/* CSV Import Section */}
-      <div className="mt-5 bg-white border border-neutral-200 rounded-xl p-4 flex flex-col gap-3 shadow-sm">
-        <div className="flex items-center gap-2">
-          <Upload className="w-4 h-4 text-emerald-600" />
-          <h4 className="text-xs font-bold text-neutral-800">取得全院班表 (Excel)</h4>
-          <span className="text-[10px] text-neutral-400 font-normal ml-2">上傳排班表 Excel 檔，或從雲端下載最新班表</span>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center flex-wrap">
+      <div className="mt-5 bg-white border border-neutral-200 rounded-xl p-4 flex flex-col gap-4 shadow-sm">
+        <div className="flex items-center gap-3 w-full p-4 bg-blue-50 border border-blue-200 rounded-xl shadow-sm relative">
+          <span className="bg-blue-600 text-white font-black text-sm px-3 py-1 rounded-lg shadow-sm shrink-0">STEP 1</span>
+          <span className="text-sm font-bold text-blue-900 shrink-0">輸入人事號擷取班表</span>
           <input 
-            type="file" 
-            accept=".csv, .xlsx, .xls"
-            onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
-            className="text-xs text-neutral-600 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer w-48"
+            type="text" 
+            placeholder="輸入人事號"
+            value={employeeId}
+            onChange={(e) => setEmployeeId(e.target.value)}
+            className="bg-white border border-blue-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 w-28 uppercase font-semibold text-blue-900 placeholder:text-blue-300"
           />
-          
-          <div className="h-4 w-px bg-neutral-300 hidden sm:block mx-1" />
-
-          <button
+          <button 
             type="button"
-            onClick={handleUploadExcelToCloud}
-            disabled={isUploading || csvData.length < 3}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-50 transition disabled:opacity-50"
-            title="將目前選取的 Excel 發布至雲端"
+            onClick={async () => {
+              if (csvData.length < 3) {
+                // Auto download first if no data
+                await handleDownloadExcelFromCloud();
+              }
+              handleExtractSchedule();
+            }}
+            disabled={!employeeId || isDownloading}
+            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-4 py-1.5 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shrink-0 flex items-center gap-2"
           >
-            {isUploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <CloudUpload className="w-3 h-3" />}
-            上傳至雲端 <span className="opacity-75">(管理者限定)</span>
+            {isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CloudDownload className="w-4 h-4" />}
+            帶入月曆
           </button>
           
-          <button
-            type="button"
-            onClick={handleDownloadExcelFromCloud}
-            disabled={isDownloading}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 transition disabled:opacity-50"
+          <button 
+            onClick={() => setShowAdminTools(!showAdminTools)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-blue-400 hover:text-blue-700 p-1.5 rounded-lg hover:bg-blue-100 transition"
+            title="管理員設定"
           >
-            {isDownloading ? <Loader2 className="w-3 h-3 animate-spin" /> : <CloudDownload className="w-3 h-3" />}
-            從雲端下載班表
+            <Settings className="w-4 h-4" />
           </button>
+        </div>
 
-          <div className="flex items-center gap-2 sm:ml-auto w-full sm:w-auto mt-2 sm:mt-0 p-2 sm:p-0 bg-neutral-50 sm:bg-transparent rounded border border-neutral-200 sm:border-transparent">
-            <span className="text-xs font-bold text-neutral-700"><span className="text-blue-600 mr-1">Step 1:</span>擷取個人班表:</span>
+        {showAdminTools && (
+          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center p-3 bg-neutral-50 rounded-lg border border-neutral-200 text-xs animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="flex items-center gap-2 font-bold text-neutral-700">
+              <Upload className="w-4 h-4 text-emerald-600" />
+              管理員工具:
+            </div>
             <input 
-              type="text" 
-              placeholder="輸入人事號"
-              value={employeeId}
-              onChange={(e) => setEmployeeId(e.target.value)}
-              className="bg-white border border-neutral-300 rounded px-2 py-1 text-xs focus:outline-none focus:border-emerald-500 w-24 uppercase"
+              type="file" 
+              accept=".csv, .xlsx, .xls"
+              onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
+              className="text-xs text-neutral-600 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer w-48"
             />
-            <button 
+            <button
               type="button"
-              onClick={handleExtractSchedule}
-              disabled={csvData.length < 3 || !employeeId}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1 rounded transition disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleUploadExcelToCloud}
+              disabled={isUploading || csvData.length < 3}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 font-semibold rounded bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-50 transition disabled:opacity-50 ml-auto"
             >
-              帶入月曆
+              {isUploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <CloudUpload className="w-3 h-3" />}
+              上傳至雲端
+            </button>
+            <button
+              type="button"
+              onClick={handleDownloadExcelFromCloud}
+              disabled={isDownloading}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 font-semibold rounded bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 transition disabled:opacity-50"
+            >
+              {isDownloading ? <Loader2 className="w-3 h-3 animate-spin" /> : <CloudDownload className="w-3 h-3" />}
+              手動下載測試
             </button>
           </div>
-        </div>
+        )}
         
         {importStatus.message && (
           <div className={`text-xs px-2 py-1.5 rounded ${importStatus.type === 'error' ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}`}>
@@ -581,15 +594,18 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
         {/* Calendar Date Picker */}
         <div className="w-full max-w-3xl bg-white border border-neutral-200 rounded-xl p-6 shadow-sm">
           <div className="flex items-center justify-between pb-3 border-b border-neutral-200 mb-3">
-            <div className="flex flex-col gap-1">
-              <span className="text-xs font-semibold text-neutral-800 flex items-center gap-1.5">
-                <Calendar className="w-4 h-4 text-blue-600" />
-                <span className="text-blue-600 mr-1">Step 2:</span>自動帶入日期(藍底) / 新增自訂日期(橘底) ({targetMonth})
-              </span>
-              <div className="flex items-center gap-2 text-[10px] text-neutral-500 pl-5">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-3 bg-indigo-50 border border-indigo-200 px-3 py-2 rounded-xl w-fit">
+                <span className="bg-indigo-600 text-white font-black text-sm px-3 py-1 rounded-lg shadow-sm">STEP 2</span>
+                <span className="text-base font-bold text-indigo-900 flex items-center gap-2">
+                  <Calendar className="w-5 h-5" />
+                  自動帶入日期(藍底) / 新增自訂日期(橘底) ({targetMonth})
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-[11px] text-neutral-500 pl-2">
                 <span>目前時數預估：</span>
-                <span className="text-blue-600 font-medium">平日 {weekdayHours}h</span>
-                <span className="text-amber-600 font-medium">假日 {weekendHours}h</span>
+                <span className="text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">平日 {weekdayHours}h</span>
+                <span className="text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-100">假日 {weekendHours}h</span>
               </div>
             </div>
 
