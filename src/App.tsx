@@ -236,7 +236,7 @@ export default function App() {
 
       <footer className="border-t border-neutral-200 bg-white py-8 text-center text-sm text-neutral-500">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>奇美醫療財團法人奇美醫院 · 加班時數批次申報助手</div>
+          
         </div>
       </footer>
     </div>
