@@ -650,7 +650,7 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
                   key={d.dateStr}
                   type="button"
                   onClick={() => handleDateClick(d.dateStr)}
-                  className={`h-12 rounded-lg text-xs transition-all flex flex-col items-center justify-center border relative ${
+                  className={`h-12 rounded-lg overflow-hidden text-xs transition-all flex flex-col items-center justify-center border relative ${
                     isAutoSelected && isCustomSelected
                       ? 'bg-[linear-gradient(135deg,#2563eb_50%,#f97316_50%)] text-white border-transparent shadow-md scale-[1.02]'
                       : isCustomSelected
