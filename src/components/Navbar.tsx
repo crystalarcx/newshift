@@ -67,7 +67,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h1 className="text-lg font-bold text-neutral-900 tracking-tight">奇美醫院加班批次申報助手</h1>
+                <h1 className="text-lg font-bold text-neutral-900 tracking-tight">加班單小幫手</h1>
                 <span className="px-2 py-0.5 text-[10px] font-semibold bg-neutral-100 text-neutral-600 rounded-full">
                   v2.0
                 </span>
