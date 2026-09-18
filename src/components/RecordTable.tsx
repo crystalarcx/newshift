@@ -104,9 +104,9 @@ export const RecordTable: React.FC<RecordTableProps> = ({
             onClick={onOpenScriptModal}
             className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition flex items-center space-x-2 border border-emerald-700 hover:border-emerald-600 group"
           >
-            <span className="bg-white text-emerald-700 font-black text-xs px-2.5 py-0.5 rounded-md shadow-sm group-hover:bg-emerald-50 transition-colors">完成</span>
+            <span className="bg-white text-emerald-700 font-black text-xs px-2.5 py-0.5 rounded-md shadow-sm group-hover:bg-emerald-50 transition-colors">STEP 4</span>
             <Sparkles className="w-4 h-4" />
-            <span>產生腳本與教學</span>
+            <span>完成：產生腳本與教學</span>
           </button>
 
           {selectedIds.length > 0 && (

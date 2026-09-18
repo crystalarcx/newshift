@@ -652,11 +652,11 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
                   onClick={() => handleDateClick(d.dateStr)}
                   className={`h-12 rounded-lg overflow-hidden text-xs transition-all flex flex-col items-center justify-center border relative ${
                     isAutoSelected && isCustomSelected
-                      ? 'bg-[linear-gradient(135deg,#2563eb_50%,#f97316_50%)] text-white border-transparent shadow-md scale-[1.02]'
+                      ? 'bg-[linear-gradient(135deg,#2563eb_49.5%,#f97316_50.5%)] text-white border-transparent bg-clip-padding shadow-md scale-[1.02] transform-gpu'
                       : isCustomSelected
-                      ? 'bg-orange-500 text-white border-orange-500 shadow-md scale-[1.02]'
+                      ? 'bg-orange-500 text-white border-orange-500 shadow-md scale-[1.02] transform-gpu'
                       : isAutoSelected
-                      ? 'bg-blue-600 text-white border-blue-600 shadow-md scale-[1.02]'
+                      ? 'bg-blue-600 text-white border-blue-600 shadow-md scale-[1.02] transform-gpu'
                       : d.isWeekend
                       ? 'bg-neutral-50 border-neutral-200 text-amber-700 hover:border-neutral-300 hover:bg-neutral-100'
                       : 'bg-neutral-50 border-neutral-200 text-neutral-700 hover:border-neutral-300 hover:bg-neutral-100'
