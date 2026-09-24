@@ -12,8 +12,23 @@ export default function App() {
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   const [isSecurityExpanded, setIsSecurityExpanded] = useState(false);
   
-  const today = new Date();
-  const defaultMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+  // 預設月份邏輯：
+  // 6 號以前（含 6 號）：顯示上個月（例如 9/3 開啟顯示 8 月、1/5 開啟顯示前一年 12 月）
+  // 6 號之後（7 號起）：顯示當月（例如 10/29 開啟顯示 10 月）
+  const defaultMonth = (() => {
+    const now = new Date();
+    const day = now.getDate();
+    if (day <= 6) {
+      const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const y = prevDate.getFullYear();
+      const m = String(prevDate.getMonth() + 1).padStart(2, '0');
+      return `${y}-${m}`;
+    } else {
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      return `${y}-${m}`;
+    }
+  })();
   const [targetMonth, setTargetMonth] = useState<string>(defaultMonth);
   const [employeeId, setEmployeeId] = useState<string>('');
 
