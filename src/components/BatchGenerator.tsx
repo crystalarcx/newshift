@@ -4,6 +4,7 @@ import { Calendar, Plus, Printer, CheckSquare, Square, Clock, AlertCircle, FileT
 import * as XLSX from 'xlsx';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
+import { isWeekendOrHoliday, isCustomHoliday, getHolidayName } from '../lib/holidays';
 
 interface BatchGeneratorProps {
   records: OvertimeRecord[];
@@ -383,16 +384,26 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
     const month = parseInt(monthStr, 10); // 1-12
     const daysInMonth = new Date(year, month, 0).getDate();
 
-    const days: { dateStr: string; dayNum: number; dayOfWeek: number; isWeekend: boolean }[] = [];
+    const days: { 
+      dateStr: string; 
+      dayNum: number; 
+      dayOfWeek: number; 
+      isWeekend: boolean;
+      isHoliday: boolean;
+      holidayName?: string;
+    }[] = [];
     for (let d = 1; d <= daysInMonth; d++) {
       const dateObj = new Date(year, month - 1, d);
       const dayOfWeek = dateObj.getDay(); // 0 is Sun, 6 is Sat
       const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const isHoliday = isCustomHoliday(dateStr);
       days.push({
         dateStr,
         dayNum: d,
         dayOfWeek,
-        isWeekend: dayOfWeek === 0 || dayOfWeek === 6,
+        isWeekend: isWeekendOrHoliday(dateStr),
+        isHoliday,
+        holidayName: getHolidayName(dateStr),
       });
     }
     return days;
@@ -650,6 +661,7 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
                   key={d.dateStr}
                   type="button"
                   onClick={() => handleDateClick(d.dateStr)}
+                  title={d.holidayName ? `${d.dateStr} - ${d.holidayName}` : d.dateStr}
                   className={`h-12 rounded-lg overflow-hidden text-xs transition-all flex flex-col items-center justify-center border relative ${
                     isAutoSelected && isCustomSelected
                       ? 'bg-[linear-gradient(135deg,#2563eb_49.5%,#f97316_50.5%)] text-white border-transparent bg-clip-padding shadow-md scale-[1.02] transform-gpu'
@@ -662,7 +674,15 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
                       : 'bg-neutral-50 border-neutral-200 text-neutral-700 hover:border-neutral-300 hover:bg-neutral-100'
                   }`}
                 >
-                  <span className="font-semibold">{d.dayNum}</span>
+                  <span className="font-semibold flex items-center justify-center gap-0.5">
+                    {d.dayNum}
+                    {d.isHoliday && (
+                      <span 
+                        className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-amber-200' : 'bg-amber-500'}`} 
+                        title={d.holidayName || '假日'} 
+                      />
+                    )}
+                  </span>
                   {shift && (
                     <span className={`text-[10px] mt-0.5 truncate max-w-full px-0.5 font-bold ${isSelected ? 'text-blue-100' : 'text-emerald-600'}`}>
                       {shift}

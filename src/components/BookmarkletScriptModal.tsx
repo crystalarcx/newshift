@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { OvertimeRecord } from '../types';
 import { Code, Copy, Check, ExternalLink, Play, Sparkles, Terminal, Download, FileCode, ShieldAlert, ChevronDown, ChevronUp } from 'lucide-react';
+import { isWeekendOrHoliday } from '../lib/holidays';
 
 interface BookmarkletScriptModalProps {
   records: OvertimeRecord[];
@@ -20,15 +21,10 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
 
   if (!isOpen) return null;
 
-  const isWeekend = (dateStr: string) => {
-    const day = new Date(dateStr).getDay();
-    return day === 0 || day === 6;
-  };
-
   const validRecords = records.filter((r) => r.status !== 'success');
   
-  const weekdayHours = validRecords.filter(r => !isWeekend(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
-  const weekendHours = validRecords.filter(r => isWeekend(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
+  const weekdayHours = validRecords.filter(r => !isWeekendOrHoliday(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
+  const weekendHours = validRecords.filter(r => isWeekendOrHoliday(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
 
   // Generate JavaScript Code payload to inject into chimei page
   const generateJsCode = () => {

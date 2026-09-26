@@ -7,6 +7,7 @@ import { RecordTable } from './components/RecordTable';
 import { BookmarkletScriptModal } from './components/BookmarkletScriptModal';
 import { auth } from './lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
+import { isWeekendOrHoliday } from './lib/holidays';
 
 export default function App() {
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
@@ -96,14 +97,9 @@ export default function App() {
 
   const currentMonthRecords = records.filter((r) => r.date.startsWith(targetMonth));
   
-  const isWeekend = (dateStr: string) => {
-    const day = new Date(dateStr).getDay();
-    return day === 0 || day === 6;
-  };
-  
   const totalHours = currentMonthRecords.reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
-  const weekdayHours = currentMonthRecords.filter(r => !isWeekend(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
-  const weekendHours = currentMonthRecords.filter(r => isWeekend(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
+  const weekdayHours = currentMonthRecords.filter(r => !isWeekendOrHoliday(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
+  const weekendHours = currentMonthRecords.filter(r => isWeekendOrHoliday(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
 
   if (!hasAccess) {
     return (
