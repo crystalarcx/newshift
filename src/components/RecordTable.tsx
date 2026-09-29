@@ -16,6 +16,7 @@ import {
   Filter,
   Calendar,
 } from 'lucide-react';
+import { isWeekendOrHoliday } from '../lib/holidays';
 
 interface RecordTableProps {
   records: OvertimeRecord[];
@@ -194,6 +195,7 @@ export const RecordTable: React.FC<RecordTableProps> = ({
             <tbody className="divide-y divide-neutral-200 text-neutral-800">
               {monthRecords.map((r) => {
                 const isSelected = selectedIds.includes(r.id);
+                const isHoliday = isWeekendOrHoliday(r.date);
                 
                 // Determine row background color
                 let bgClass = 'hover:bg-neutral-100/40 transition';
@@ -222,7 +224,7 @@ export const RecordTable: React.FC<RecordTableProps> = ({
                       </button>
                     </td>
                     {/* Date */}
-                    <td className="py-3 px-3 font-mono font-semibold text-blue-600 whitespace-nowrap">
+                    <td className={`py-3 px-3 font-mono font-semibold whitespace-nowrap ${isHoliday ? 'text-red-600' : 'text-blue-600'}`}>
                       <div className="flex flex-col">
                         <span className="px-1 py-0.5">{r.date}</span>
                         <span className="text-[10px] text-neutral-400 pl-1 font-sans">
