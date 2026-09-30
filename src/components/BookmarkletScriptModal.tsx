@@ -325,7 +325,7 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
                     <span className="bg-indigo-600 text-white font-black text-xs px-3 py-1 rounded-lg shadow-sm">執行腳本步驟 2</span>
                     <span className="text-base font-bold text-indigo-900">拖曳下方按鈕至書籤列</span>
                   </div>
-                  <div className="ml-[104px]">
+                  <div className="ml-[104px] space-y-3">
                     <div className="p-4 bg-white border-2 border-dashed border-indigo-300 rounded-xl flex justify-center items-center shadow-sm">
                       <span
                         dangerouslySetInnerHTML={{
@@ -335,6 +335,11 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
                           </a>`
                         }}
                       />
+                    </div>
+                    {/* 重要提醒：腳本運行期間請保持停留在該分頁 */}
+                    <div className="flex items-center gap-2 bg-amber-50 border border-amber-300 text-amber-900 px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-sm">
+                      <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                      <span>重要提醒：腳本運行期間請保持停留在該分頁</span>
                     </div>
                   </div>
                 </div>
@@ -367,24 +372,6 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
                   <p className="text-sm text-emerald-800 ml-[104px]">
                     在加班網頁中，點擊剛才加入書籤列的<strong className="text-emerald-900">「奇美加班一鍵填寫」</strong>書籤，程式就會自動逐筆幫您填入資料。
                   </p>
-                </div>
-
-                {/* Stay on tab reminder */}
-                <div className="bg-amber-50 border border-amber-300 rounded-xl p-4 flex items-start gap-3 shadow-sm">
-                  <div className="p-2 bg-amber-100 rounded-lg text-amber-700 shrink-0 mt-0.5">
-                    <AlertTriangle className="w-5 h-5" />
-                  </div>
-                  <div className="text-xs space-y-1.5 text-amber-950">
-                    <div className="font-bold text-sm text-amber-900 flex items-center gap-1.5">
-                      <span>重要提醒：腳本運行期間請保持停留在該分頁</span>
-                    </div>
-                    <p className="text-amber-800 leading-relaxed">
-                      Chrome 瀏覽器對「背景分頁」設有省電節流限制，若在送出途中切換到其他分頁，可能導致<strong>計時器凍結、填表速度嚴重變慢或系統確認視窗卡住</strong>。
-                    </p>
-                    <p className="text-amber-900 font-medium">
-                      💡 <strong>小撇步：</strong>填寫約需 10～30 秒，請靜候它自動送出完畢；若想同時做其他事，可將該分頁<strong>拖曳拉出成獨立小視窗</strong>放在旁邊，就不會被 Chrome 凍結！
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>
