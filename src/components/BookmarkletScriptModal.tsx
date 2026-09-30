@@ -246,12 +246,12 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-neutral-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white border border-neutral-200 rounded-2xl max-w-4xl w-full flex flex-col shadow-2xl h-[90vh] sm:h-[85vh]">
+    <div className="fixed inset-0 z-50 bg-neutral-900/40 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5">
+      <div className="bg-white border border-neutral-200 rounded-2xl max-w-6xl xl:max-w-7xl w-full flex flex-col shadow-2xl max-h-[94vh]">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 sm:p-6 border-b border-neutral-200 bg-white rounded-t-2xl shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-200 bg-white rounded-t-2xl shrink-0">
           <div className="flex items-center space-x-3">
-            <div className="p-2.5 rounded-xl bg-blue-50 border border-blue-100/60 text-blue-600 shadow-sm">
+            <div className="p-2 rounded-xl bg-blue-50 border border-blue-100/60 text-blue-600 shadow-sm">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
@@ -269,162 +269,176 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-5 sm:p-6 bg-neutral-50 flex flex-col gap-6">
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6 bg-neutral-50 flex flex-col gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
             
-          {/* Top Section: Info & Instructions */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Target Data Info */}
-            <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm">
-              <h3 className="text-sm font-bold text-neutral-900 flex items-center gap-2 mb-4">
-                <FileCode className="w-4 h-4 text-blue-600" />
-                準備匯出的資料
-              </h3>
-              <div className="flex flex-col gap-2 bg-neutral-50 p-4 rounded-lg border border-neutral-200 mb-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-neutral-600 font-medium">待發送記錄數：</span>
-                  <span className="font-bold text-blue-600 text-base">{validRecords.length} 筆</span>
+            {/* Left Column: Data Summary & Code Box */}
+            <div className="lg:col-span-4 flex flex-col gap-4">
+              {/* Target Data Info */}
+              <div className="bg-white border border-neutral-200 rounded-xl p-4 shadow-sm">
+                <h3 className="text-sm font-bold text-neutral-900 flex items-center gap-2 mb-3">
+                  <FileCode className="w-4 h-4 text-blue-600" />
+                  準備匯出的資料
+                </h3>
+                <div className="flex flex-col gap-2 bg-neutral-50 p-3 rounded-lg border border-neutral-200">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-neutral-600 font-medium">待發送記錄數：</span>
+                    <span className="font-bold text-blue-600 text-base">{validRecords.length} 筆</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs border-t border-neutral-200 pt-2">
+                    <span className="text-neutral-600 font-medium">平日時數：</span>
+                    <span className="font-bold text-neutral-800">{weekdayHours} h</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-neutral-600 font-medium">假日時數：</span>
+                    <span className="font-bold text-neutral-800">{weekendHours} h</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs border-t border-neutral-200 pt-2">
+                    <span className="text-neutral-600 font-bold">總計時數：</span>
+                    <span className="font-bold text-indigo-700 text-sm">
+                      {Math.round((weekdayHours + weekendHours) * 10) / 10} h
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between text-xs border-t border-neutral-200 pt-2">
-                  <span className="text-neutral-600 font-medium">平日時數：</span>
-                  <span className="font-bold text-neutral-800">{weekdayHours} h</span>
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-neutral-600 font-medium">假日時數：</span>
-                  <span className="font-bold text-neutral-800">{weekendHours} h</span>
-                </div>
+                {validRecords.length === 0 && (
+                  <p className="text-xs text-red-500 flex items-center gap-1.5 mt-2.5 font-medium bg-red-50 p-2 rounded-md border border-red-100">
+                    <ShieldAlert className="w-4 h-4 shrink-0" /> 您目前沒有需要發送的紀錄。
+                  </p>
+                )}
               </div>
-              {validRecords.length === 0 && (
-                <p className="text-xs text-red-500 flex items-center gap-1.5 mt-3 font-medium bg-red-50 p-2 rounded-md border border-red-100">
-                  <ShieldAlert className="w-4 h-4" /> 提示：您目前沒有需要發送的紀錄，腳本將無法執行。
-                </p>
-              )}
+
+              {/* Code Box */}
+              <div className="flex flex-col rounded-xl overflow-hidden border border-neutral-200 shadow-sm bg-white">
+                <div className="bg-neutral-100/90 border-b border-neutral-200 px-3 py-2 flex items-center justify-between shrink-0">
+                  <div className="flex items-center space-x-1.5">
+                    <Code className="w-3.5 h-3.5 text-neutral-500" />
+                    <span className="text-xs font-mono text-neutral-600 font-semibold truncate max-w-[150px]">
+                      腳本代碼
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopy}
+                    className={`flex items-center space-x-1 px-2.5 py-1 rounded text-xs font-semibold transition ${
+                      copied
+                        ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                        : 'bg-white border border-neutral-300 text-neutral-700 hover:bg-neutral-50 hover:text-blue-600'
+                    }`}
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="w-3.5 h-3.5" />
+                        <span>已複製 !</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>複製腳本代碼</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsCodeExpanded(!isCodeExpanded)}
+                  className="w-full text-left px-3 py-1.5 text-[11px] text-neutral-500 hover:text-neutral-800 flex items-center justify-between bg-neutral-50/50"
+                >
+                  <span>{isCodeExpanded ? '收合原始碼' : '展開原始碼檢視 (可手動貼至 Console)'}</span>
+                  {isCodeExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                </button>
+                {isCodeExpanded && (
+                  <div className="h-44 bg-neutral-900 p-2.5 overflow-auto">
+                    <pre className="text-[10px] font-mono text-blue-200 leading-relaxed font-medium">
+                      <code>{codeString}</code>
+                    </pre>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Instructions */}
-            <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm">
-              <h3 className="text-sm font-bold text-neutral-900 mb-4 flex items-center gap-2">
+            {/* Right Column: Execution Steps */}
+            <div className="lg:col-span-8 bg-white border border-neutral-200 rounded-xl p-4 sm:p-5 shadow-sm">
+              <h3 className="text-sm font-bold text-neutral-900 mb-3.5 flex items-center gap-2">
                 <Play className="w-4 h-4 text-emerald-600" />
                 執行步驟說明
               </h3>
-              
-              <div className="space-y-4">
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                 {/* Step 1 */}
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="bg-blue-600 text-white font-black text-xs px-3 py-1 rounded-lg shadow-sm">執行腳本步驟 1</span>
-                    <span className="text-base font-bold text-blue-900">顯示瀏覽器書籤列</span>
+                <div className="bg-blue-50/80 border border-blue-200 rounded-xl p-3.5 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="bg-blue-600 text-white font-black text-[11px] px-2.5 py-0.5 rounded-md shadow-sm shrink-0">步驟 1</span>
+                      <span className="text-sm font-bold text-blue-900">顯示瀏覽器書籤列</span>
+                    </div>
+                    <p className="text-xs text-blue-800 leading-relaxed">
+                      若未看到書籤列，請按鍵盤 <strong className="bg-blue-200/60 px-1 py-0.5 rounded text-blue-900 font-mono">Ctrl+Shift+B</strong> (Mac: <strong className="bg-blue-200/60 px-1 py-0.5 rounded text-blue-900 font-mono">Cmd+Shift+B</strong>)。
+                    </p>
                   </div>
-                  <p className="text-sm text-blue-800 ml-[104px]">
-                    如果您沒看到書籤列，請按鍵盤 <strong className="bg-blue-200/60 px-1.5 py-0.5 rounded text-blue-900">Ctrl + Shift + B</strong> (Mac 為 <strong className="bg-blue-200/60 px-1.5 py-0.5 rounded text-blue-900">Cmd + Shift + B</strong>) 將其顯示。
-                  </p>
                 </div>
 
                 {/* Step 2 */}
-                <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="bg-indigo-600 text-white font-black text-xs px-3 py-1 rounded-lg shadow-sm">執行腳本步驟 2</span>
-                    <span className="text-base font-bold text-indigo-900">拖曳下方按鈕至書籤列</span>
-                  </div>
-                  <div className="ml-[104px] space-y-3">
-                    <div className="p-4 bg-white border-2 border-dashed border-indigo-300 rounded-xl flex justify-center items-center shadow-sm">
+                <div className="bg-indigo-50/80 border border-indigo-200 rounded-xl p-3.5 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="bg-indigo-600 text-white font-black text-[11px] px-2.5 py-0.5 rounded-md shadow-sm shrink-0">步驟 2</span>
+                      <span className="text-sm font-bold text-indigo-900">拖曳下方按鈕至書籤列</span>
+                    </div>
+                    <div className="p-2.5 bg-white border-2 border-dashed border-indigo-300 rounded-xl flex justify-center items-center shadow-sm mb-2.5">
                       <span
                         dangerouslySetInnerHTML={{
-                          __html: `<a href="${bookmarkletHref}" onclick="event.preventDefault()" class="inline-flex items-center space-x-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-700 transition-colors text-white font-extrabold text-sm rounded-xl shadow-lg cursor-grab active:cursor-grabbing border border-indigo-700">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
+                          __html: `<a href="${bookmarkletHref}" onclick="event.preventDefault()" class="inline-flex items-center space-x-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 transition-colors text-white font-extrabold text-xs rounded-lg shadow cursor-grab active:cursor-grabbing border border-indigo-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
                             <span>拖曳我至書籤列：奇美加班一鍵填寫</span>
                           </a>`
                         }}
                       />
                     </div>
-                    {/* 重要提醒：腳本運行期間請保持停留在該分頁 */}
-                    <div className="flex items-center gap-2 bg-amber-50 border border-amber-300 text-amber-900 px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-sm">
-                      <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-                      <span>重要提醒：腳本運行期間請保持停留在該分頁</span>
-                    </div>
+                  </div>
+                  {/* 重要提醒：腳本運行期間請保持停留在該分頁 */}
+                  <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-300 text-amber-900 px-2.5 py-1.5 rounded-lg text-[11px] font-bold shadow-sm">
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    <span>重要提醒：腳本運行期間請保持停留在該分頁</span>
                   </div>
                 </div>
 
                 {/* Step 3 */}
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="bg-amber-500 text-white font-black text-xs px-3 py-1 rounded-lg shadow-sm">執行腳本步驟 3</span>
-                    <span className="text-base font-bold text-amber-900">開啟並登入奇美加班網頁</span>
+                <div className="bg-amber-50/80 border border-amber-200 rounded-xl p-3.5 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="bg-amber-500 text-white font-black text-[11px] px-2.5 py-0.5 rounded-md shadow-sm shrink-0">步驟 3</span>
+                      <span className="text-sm font-bold text-amber-900">開啟並登入奇美加班網頁</span>
+                    </div>
+                    <div className="mt-1">
+                      <a
+                        href={loginUrl}
+                        onClick={handleLinkClick}
+                        target={hasEmployeeId ? "_blank" : undefined}
+                        rel="noreferrer"
+                        className="text-amber-800 hover:text-amber-950 font-mono text-xs break-all font-bold bg-amber-200/50 hover:bg-amber-200/80 px-2.5 py-1.5 rounded-lg inline-flex items-center gap-1 border border-amber-300/60 transition"
+                      >
+                        <span>{displayUrl}</span>
+                      </a>
+                    </div>
                   </div>
-                  <p className="text-sm text-amber-900 ml-[104px] mt-1">
-                    <a
-                      href={loginUrl}
-                      onClick={handleLinkClick}
-                      target={hasEmployeeId ? "_blank" : undefined}
-                      rel="noreferrer"
-                      className="text-amber-700 hover:text-amber-900 underline font-mono break-all font-bold bg-amber-200/50 px-2 py-1 rounded inline-block"
-                    >
-                      {displayUrl}
-                    </a>
-                  </p>
                 </div>
 
                 {/* Step 4 */}
-                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="bg-emerald-600 text-white font-black text-xs px-3 py-1 rounded-lg shadow-sm">執行腳本步驟 4</span>
-                    <span className="text-base font-bold text-emerald-900">點擊書籤，自動執行！</span>
+                <div className="bg-emerald-50/80 border border-emerald-200 rounded-xl p-3.5 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="bg-emerald-600 text-white font-black text-[11px] px-2.5 py-0.5 rounded-md shadow-sm shrink-0">步驟 4</span>
+                      <span className="text-sm font-bold text-emerald-900">點擊書籤，自動執行！</span>
+                    </div>
+                    <p className="text-xs text-emerald-800 leading-relaxed">
+                      在加班網頁中，點擊書籤列的<strong className="text-emerald-950">「奇美加班一鍵填寫」</strong>，程式即刻自動逐筆填入並送出。
+                    </p>
                   </div>
-                  <p className="text-sm text-emerald-800 ml-[104px]">
-                    在加班網頁中，點擊剛才加入書籤列的<strong className="text-emerald-900">「奇美加班一鍵填寫」</strong>書籤，程式就會自動逐筆幫您填入資料。
-                  </p>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Bottom Section: Code Preview (Collapsible) */}
-          <div className="flex flex-col rounded-xl overflow-hidden border border-neutral-200 shadow-sm relative group bg-white">
-            <button
-              onClick={() => setIsCodeExpanded(!isCodeExpanded)}
-              className="w-full bg-neutral-100 border-b border-neutral-200 px-4 py-2.5 flex items-center justify-between shrink-0 hover:bg-neutral-200/50 transition"
-            >
-              <div className="flex items-center space-x-2">
-                <Code className="w-4 h-4 text-neutral-500" />
-                <span className="text-xs font-mono text-neutral-600 font-semibold">
-                  chimei-overtime-autofill.js (原始碼檢視)
-                </span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCopy();
-                  }}
-                  className={`flex items-center space-x-1.5 px-3 py-1 rounded text-xs font-semibold transition ${
-                    copied
-                      ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
-                      : 'bg-white border border-neutral-300 text-neutral-700 hover:bg-neutral-50 hover:text-blue-600'
-                  }`}
-                >
-                  {copied ? (
-                    <>
-                      <Check className="w-3.5 h-3.5" />
-                      <span>已複製 !</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5" />
-                      <span>複製程式碼</span>
-                    </>
-                  )}
-                </div>
-                {isCodeExpanded ? <ChevronUp className="w-4 h-4 text-neutral-500" /> : <ChevronDown className="w-4 h-4 text-neutral-500" />}
-              </div>
-            </button>
-            {isCodeExpanded && (
-              <div className="h-48 bg-neutral-900 p-3 overflow-auto">
-                <pre className="text-[10px] sm:text-[11px] font-mono text-blue-200 leading-relaxed font-medium">
-                  <code>{codeString}</code>
-                </pre>
-              </div>
-            )}
           </div>
-            
         </div>
       </div>
     </div>
