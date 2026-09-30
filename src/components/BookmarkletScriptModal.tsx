@@ -52,17 +52,24 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
   
   console.log('%c【奇美加班助手】簡化模式填寫啟動，共 ' + records.length + ' 筆明細', 'color:#38bdf8;font-size:14px;font-weight:bold;');
 
-  // 1. 取得或初始化待處理佇列 (支援頁面重新整理後繼續處理)
+  // 1. 取得或初始化待處理佇列 (支援同一批次重新整理後繼續處理，新腳本則自動重置為最新資料)
+  const batchId = "${Date.now()}";
   let queue = [];
   let isAutoRunning = false;
   try {
+    const savedBatch = sessionStorage.getItem('chimei_batch_id');
     const saved = sessionStorage.getItem('chimei_overtime_queue');
-    if (saved) queue = JSON.parse(saved);
+    if (savedBatch === batchId && saved) {
+      queue = JSON.parse(saved);
+    }
   } catch(e) {}
   
   if (!queue || queue.length === 0) {
     queue = records;
-    try { sessionStorage.setItem('chimei_overtime_queue', JSON.stringify(queue)); } catch(e) {}
+    try { 
+      sessionStorage.setItem('chimei_batch_id', batchId);
+      sessionStorage.setItem('chimei_overtime_queue', JSON.stringify(queue)); 
+    } catch(e) {}
   }
 
   // 2. 跨 Window 及 iframe 收集 DOM
@@ -146,7 +153,10 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
     if (queue.length === 0) {
       console.log('%c✅ 【奇美加班助手】所有加班紀錄皆已填寫完畢！', 'color:#10b981;font-size:16px;font-weight:bold;');
       alert('🎉 奇美加班批次申報助手\\n\\n所有紀錄已自動填寫與送出完畢！請自行確認畫面上是否有成功訊息。');
-      try { sessionStorage.removeItem('chimei_overtime_queue'); } catch(e) {}
+      try {
+        sessionStorage.removeItem('chimei_overtime_queue');
+        sessionStorage.removeItem('chimei_batch_id');
+      } catch(e) {}
       return;
     }
 
