@@ -17,6 +17,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import { isWeekendOrHoliday } from '../lib/holidays';
+import { calcOvertimeHours } from '../lib/timeUtils';
 
 interface RecordTableProps {
   records: OvertimeRecord[];
@@ -39,6 +40,51 @@ export const RecordTable: React.FC<RecordTableProps> = ({
   const monthRecords = records
     .filter((r) => r.date.startsWith(targetMonth))
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  const monthWeekdayHours = Math.round(
+    monthRecords
+      .filter((r) => !isWeekendOrHoliday(r.date))
+      .reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10
+  ) / 10;
+  const monthWeekendHours = Math.round(
+    monthRecords
+      .filter((r) => isWeekendOrHoliday(r.date))
+      .reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10
+  ) / 10;
+  const monthTotalHours = Math.round(
+    monthRecords.reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10
+  ) / 10;
+
+  const handleTimeChange = (id: string, field: 'startTime' | 'endTime', value: string) => {
+    const cleaned = value.replace(/[^0-9]/g, '').slice(0, 4);
+    setRecords((prev) =>
+      prev.map((item) => {
+        if (item.id !== id) return item;
+        const newStart = field === 'startTime' ? cleaned : item.startTime;
+        const newEnd = field === 'endTime' ? cleaned : item.endTime;
+
+        let newHours = item.hours;
+        if (newStart.length === 4 && newEnd.length === 4) {
+          newHours = calcOvertimeHours(newStart, newEnd, item.hours);
+        }
+
+        return {
+          ...item,
+          [field]: cleaned,
+          hours: newHours,
+        };
+      })
+    );
+  };
+
+  const handleHoursChange = (id: string, value: string) => {
+    const val = parseFloat(value);
+    setRecords((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, hours: isNaN(val) ? 0 : Math.max(0, val) } : item
+      )
+    );
+  };
 
   const handleSelectAll = () => {
     if (selectedIds.length === monthRecords.length) {
@@ -92,8 +138,20 @@ export const RecordTable: React.FC<RecordTableProps> = ({
               </span>
             </h2>
           </div>
-          <p className="text-xs text-neutral-500 mt-1 pl-2">
-            微調、修改事由或刪除，可一次勾選多筆修改事由或刪除。
+          <div className="flex items-center flex-wrap gap-2 text-xs text-neutral-600 mt-1.5 pl-1">
+            <span className="font-medium text-neutral-500">目前時數預估：</span>
+            <span className="text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">
+              平日 {monthWeekdayHours}h
+            </span>
+            <span className="text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-100">
+              假日 {monthWeekendHours}h
+            </span>
+            <span className="text-neutral-700 font-bold bg-neutral-100 px-2 py-0.5 rounded border border-neutral-200">
+              總計 {monthTotalHours}h
+            </span>
+          </div>
+          <p className="text-xs text-neutral-400 mt-1 pl-1">
+            修改起迄時間會自動計算並即時連動時數；亦可直接微調時數或批次修改事由。
           </p>
         </div>
 
@@ -186,9 +244,10 @@ export const RecordTable: React.FC<RecordTableProps> = ({
                   </button>
                 </th>
                 <th className="py-3 px-3 font-semibold">1. 日期</th>
-                <th className="py-3 px-3 font-semibold">2. 起時 <span className="text-[10px] text-neutral-400 font-normal">(0000格式)</span></th>
-                <th className="py-3 px-3 font-semibold">3. 迄時 <span className="text-[10px] text-neutral-400 font-normal">(0000格式)</span></th>
-                <th className="py-3 px-3 font-semibold">4. 事由描述</th>
+                <th className="py-3 px-3 font-semibold">2. 起時 <span className="text-[10px] text-neutral-400 font-normal">(0000)</span></th>
+                <th className="py-3 px-3 font-semibold">3. 迄時 <span className="text-[10px] text-neutral-400 font-normal">(0000)</span></th>
+                <th className="py-3 px-3 font-semibold text-center w-24">4. 時數 <span className="text-[10px] text-neutral-400 font-normal">(h)</span></th>
+                <th className="py-3 px-3 font-semibold">5. 事由描述</th>
                 <th className="py-3 px-3 font-semibold text-right">操作</th>
               </tr>
             </thead>
@@ -239,16 +298,9 @@ export const RecordTable: React.FC<RecordTableProps> = ({
                         maxLength={4}
                         placeholder="1730"
                         value={r.startTime}
-                        onChange={(e) =>
-                          setRecords(
-                            records.map((item) =>
-                              item.id === r.id
-                                ? { ...item, startTime: e.target.value.replace(/[^0-9]/g, '') }
-                                : item
-                            )
-                          )
-                        }
+                        onChange={(e) => handleTimeChange(r.id, 'startTime', e.target.value)}
                         className="w-16 bg-neutral-50 border border-neutral-200 rounded px-1.5 py-0.5 text-center text-xs font-mono font-bold text-amber-700 focus:outline-none focus:border-blue-600"
+                        title="起時 (4位數，如 1730)"
                       />
                     </td>
                     {/* End Time (0000) */}
@@ -258,17 +310,26 @@ export const RecordTable: React.FC<RecordTableProps> = ({
                         maxLength={4}
                         placeholder="1930"
                         value={r.endTime}
-                        onChange={(e) =>
-                          setRecords(
-                            records.map((item) =>
-                              item.id === r.id
-                                ? { ...item, endTime: e.target.value.replace(/[^0-9]/g, '') }
-                                : item
-                            )
-                          )
-                        }
+                        onChange={(e) => handleTimeChange(r.id, 'endTime', e.target.value)}
                         className="w-16 bg-neutral-50 border border-neutral-200 rounded px-1.5 py-0.5 text-center text-xs font-mono font-bold text-amber-700 focus:outline-none focus:border-blue-600"
+                        title="迄時 (4位數，如 1930)"
                       />
+                    </td>
+                    {/* Hours (linked & auto-calculated) */}
+                    <td className="py-3 px-3 font-mono text-center">
+                      <div className="inline-flex items-center justify-center gap-1">
+                        <input
+                          type="number"
+                          step="0.5"
+                          min="0"
+                          max="24"
+                          value={r.hours ?? 0}
+                          onChange={(e) => handleHoursChange(r.id, e.target.value)}
+                          className="w-14 bg-neutral-50 border border-neutral-200 rounded px-1 py-0.5 text-center text-xs font-mono font-bold text-indigo-700 focus:outline-none focus:border-blue-600"
+                          title="修改起迄時間會自動計算並連動，亦可手動微調"
+                        />
+                        <span className="text-[11px] text-neutral-400 font-sans">h</span>
+                      </div>
                     </td>
                     {/* Reason */}
                     <td className="py-3 px-3">

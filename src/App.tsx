@@ -97,9 +97,9 @@ export default function App() {
 
   const currentMonthRecords = records.filter((r) => r.date.startsWith(targetMonth));
   
-  const totalHours = currentMonthRecords.reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
-  const weekdayHours = currentMonthRecords.filter(r => !isWeekendOrHoliday(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
-  const weekendHours = currentMonthRecords.filter(r => isWeekendOrHoliday(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
+  const totalHours = Math.round(currentMonthRecords.reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10) / 10;
+  const weekdayHours = Math.round(currentMonthRecords.filter(r => !isWeekendOrHoliday(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10) / 10;
+  const weekendHours = Math.round(currentMonthRecords.filter(r => isWeekendOrHoliday(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10) / 10;
 
   if (!hasAccess) {
     return (

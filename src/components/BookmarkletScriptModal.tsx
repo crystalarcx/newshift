@@ -23,8 +23,8 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
 
   const validRecords = records.filter((r) => r.status !== 'success');
   
-  const weekdayHours = validRecords.filter(r => !isWeekendOrHoliday(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
-  const weekendHours = validRecords.filter(r => isWeekendOrHoliday(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0);
+  const weekdayHours = Math.round(validRecords.filter(r => !isWeekendOrHoliday(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10) / 10;
+  const weekendHours = Math.round(validRecords.filter(r => isWeekendOrHoliday(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10) / 10;
 
   // Generate JavaScript Code payload to inject into chimei page
   const generateJsCode = () => {
@@ -33,7 +33,7 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
         date: r.date,
         startTime: (r.startTime || '').replace(/[^0-9]/g, '').padStart(4, '0'),
         endTime: (r.endTime || '').replace(/[^0-9]/g, '').padStart(4, '0'),
-        hours: r.hours || 2,
+        hours: typeof r.hours === 'number' && !isNaN(r.hours) ? r.hours : 2,
         reason: r.reason,
       }))
     );
