@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { OvertimeRecord } from '../types';
-import { Code, Copy, Check, ExternalLink, Play, Sparkles, Terminal, Download, FileCode, ShieldAlert, ChevronDown, ChevronUp } from 'lucide-react';
+import { Code, Copy, Check, ExternalLink, Play, Sparkles, Terminal, Download, FileCode, ShieldAlert, ChevronDown, ChevronUp, AlertTriangle } from 'lucide-react';
 import { isWeekendOrHoliday } from '../lib/holidays';
 
 interface BookmarkletScriptModalProps {
@@ -51,6 +51,7 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
   }
   
   console.log('%c【奇美加班助手】簡化模式填寫啟動，共 ' + records.length + ' 筆明細', 'color:#38bdf8;font-size:14px;font-weight:bold;');
+  console.log('%c⚠️ 【貼心提醒】腳本執行中請保持停留在本分頁，避免 Chrome 背景節流導致自動送出暫停！', 'color:#f59e0b;font-size:12px;font-weight:bold;');
 
   // 1. 取得或初始化待處理佇列 (支援同一批次重新整理後繼續處理，新腳本則自動重置為最新資料)
   const batchId = "${Date.now()}";
@@ -366,6 +367,24 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
                   <p className="text-sm text-emerald-800 ml-[104px]">
                     在加班網頁中，點擊剛才加入書籤列的<strong className="text-emerald-900">「奇美加班一鍵填寫」</strong>書籤，程式就會自動逐筆幫您填入資料。
                   </p>
+                </div>
+
+                {/* Stay on tab reminder */}
+                <div className="bg-amber-50 border border-amber-300 rounded-xl p-4 flex items-start gap-3 shadow-sm">
+                  <div className="p-2 bg-amber-100 rounded-lg text-amber-700 shrink-0 mt-0.5">
+                    <AlertTriangle className="w-5 h-5" />
+                  </div>
+                  <div className="text-xs space-y-1.5 text-amber-950">
+                    <div className="font-bold text-sm text-amber-900 flex items-center gap-1.5">
+                      <span>重要提醒：腳本運行期間請保持停留在該分頁</span>
+                    </div>
+                    <p className="text-amber-800 leading-relaxed">
+                      Chrome 瀏覽器對「背景分頁」設有省電節流限制，若在送出途中切換到其他分頁，可能導致<strong>計時器凍結、填表速度嚴重變慢或系統確認視窗卡住</strong>。
+                    </p>
+                    <p className="text-amber-900 font-medium">
+                      💡 <strong>小撇步：</strong>填寫約需 10～30 秒，請靜候它自動送出完畢；若想同時做其他事，可將該分頁<strong>拖曳拉出成獨立小視窗</strong>放在旁邊，就不會被 Chrome 凍結！
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
