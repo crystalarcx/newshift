@@ -384,7 +384,7 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
                       <span className="bg-indigo-600 text-white font-black text-[11px] px-2.5 py-0.5 rounded-md shadow-sm shrink-0">步驟 2</span>
                       <span className="text-sm font-bold text-indigo-900">拖曳下方按鈕至書籤列</span>
                     </div>
-                    <div className="p-2.5 bg-white border-2 border-dashed border-indigo-300 rounded-xl flex justify-center items-center shadow-sm mb-2.5">
+                    <div className="p-3 bg-white border-2 border-dashed border-indigo-300 rounded-xl flex justify-center items-center shadow-sm">
                       <span
                         dangerouslySetInnerHTML={{
                           __html: `<a href="${bookmarkletHref}" onclick="event.preventDefault()" class="inline-flex items-center space-x-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 transition-colors text-white font-extrabold text-xs rounded-lg shadow cursor-grab active:cursor-grabbing border border-indigo-700">
@@ -394,11 +394,6 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
                         }}
                       />
                     </div>
-                  </div>
-                  {/* 重要提醒：腳本運行期間請保持停留在該分頁 */}
-                  <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-300 text-amber-900 px-2.5 py-1.5 rounded-lg text-[11px] font-bold shadow-sm">
-                    <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                    <span>重要提醒：腳本運行期間請保持停留在該分頁</span>
                   </div>
                 </div>
 
@@ -430,9 +425,14 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
                       <span className="bg-emerald-600 text-white font-black text-[11px] px-2.5 py-0.5 rounded-md shadow-sm shrink-0">步驟 4</span>
                       <span className="text-sm font-bold text-emerald-900">點擊書籤，自動執行！</span>
                     </div>
-                    <p className="text-xs text-emerald-800 leading-relaxed">
+                    <p className="text-xs text-emerald-800 leading-relaxed mb-2">
                       在加班網頁中，點擊書籤列的<strong className="text-emerald-950">「奇美加班一鍵填寫」</strong>，程式即刻自動逐筆填入並送出。
                     </p>
+                  </div>
+                  {/* 重要提醒：腳本運行期間請保持停留在該分頁 */}
+                  <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-300 text-amber-900 px-2.5 py-1.5 rounded-lg text-[11px] font-bold shadow-sm">
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    <span>重要提醒：腳本運行期間請保持停留在該分頁</span>
                   </div>
                 </div>
               </div>
