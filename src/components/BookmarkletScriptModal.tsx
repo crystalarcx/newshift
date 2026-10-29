@@ -8,6 +8,7 @@ interface BookmarkletScriptModalProps {
   isOpen: boolean;
   onClose: () => void;
   employeeId?: string;
+  customHolidays?: string[];
 }
 
 export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
@@ -15,6 +16,7 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
   isOpen,
   onClose,
   employeeId = '',
+  customHolidays,
 }) => {
   const [copied, setCopied] = useState(false);
   const [isCodeExpanded, setIsCodeExpanded] = useState(false);
@@ -23,8 +25,8 @@ export const BookmarkletScriptModal: React.FC<BookmarkletScriptModalProps> = ({
 
   const validRecords = records.filter((r) => r.status !== 'success');
   
-  const weekdayHours = Math.round(validRecords.filter(r => !isWeekendOrHoliday(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10) / 10;
-  const weekendHours = Math.round(validRecords.filter(r => isWeekendOrHoliday(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10) / 10;
+  const weekdayHours = Math.round(validRecords.filter(r => !isWeekendOrHoliday(r.date, customHolidays)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10) / 10;
+  const weekendHours = Math.round(validRecords.filter(r => isWeekendOrHoliday(r.date, customHolidays)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10) / 10;
 
   // Generate JavaScript Code payload to inject into chimei page
   const generateJsCode = () => {

@@ -16,7 +16,7 @@ import {
   Filter,
   Calendar,
 } from 'lucide-react';
-import { isWeekendOrHoliday } from '../lib/holidays';
+import { isWeekendOrHoliday, isUserCustomHoliday } from '../lib/holidays';
 import { calcOvertimeHours } from '../lib/timeUtils';
 
 interface RecordTableProps {
@@ -24,6 +24,7 @@ interface RecordTableProps {
   setRecords: React.Dispatch<React.SetStateAction<OvertimeRecord[]>>;
   onOpenScriptModal: () => void;
   targetMonth: string;
+  customHolidays?: string[];
 }
 
 export const RecordTable: React.FC<RecordTableProps> = ({
@@ -31,6 +32,7 @@ export const RecordTable: React.FC<RecordTableProps> = ({
   setRecords,
   onOpenScriptModal,
   targetMonth,
+  customHolidays,
 }) => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [batchReasonText, setBatchReasonText] = useState('');
@@ -43,12 +45,12 @@ export const RecordTable: React.FC<RecordTableProps> = ({
 
   const monthWeekdayHours = Math.round(
     monthRecords
-      .filter((r) => !isWeekendOrHoliday(r.date))
+      .filter((r) => !isWeekendOrHoliday(r.date, customHolidays))
       .reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10
   ) / 10;
   const monthWeekendHours = Math.round(
     monthRecords
-      .filter((r) => isWeekendOrHoliday(r.date))
+      .filter((r) => isWeekendOrHoliday(r.date, customHolidays))
       .reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10
   ) / 10;
   const monthTotalHours = Math.round(
@@ -254,7 +256,8 @@ export const RecordTable: React.FC<RecordTableProps> = ({
             <tbody className="divide-y divide-neutral-200 text-neutral-800">
               {monthRecords.map((r) => {
                 const isSelected = selectedIds.includes(r.id);
-                const isHoliday = isWeekendOrHoliday(r.date);
+                const isHoliday = isWeekendOrHoliday(r.date, customHolidays);
+                const isUserCustom = isUserCustomHoliday(r.date, customHolidays);
                 
                 // Determine row background color
                 let bgClass = 'hover:bg-neutral-100/40 transition';
@@ -285,7 +288,22 @@ export const RecordTable: React.FC<RecordTableProps> = ({
                     {/* Date */}
                     <td className={`py-3 px-3 font-mono font-semibold whitespace-nowrap ${isHoliday ? 'text-red-600' : 'text-blue-600'}`}>
                       <div className="flex flex-col">
-                        <span className="px-1 py-0.5">{r.date}</span>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="px-1 py-0.5">{r.date}</span>
+                          {isHoliday ? (
+                            <span className={`inline-flex items-center text-[10px] font-bold px-1.5 py-0.2 rounded border ${
+                              isUserCustom 
+                                ? 'bg-amber-100 text-amber-800 border-amber-300' 
+                                : 'bg-red-50 text-red-600 border-red-200'
+                            }`}>
+                              {isUserCustom ? '自訂假日' : '假日'}
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center text-[10px] font-medium px-1.5 py-0.2 rounded bg-blue-50 text-blue-600 border border-blue-200">
+                              平日
+                            </span>
+                          )}
+                        </div>
                         <span className="text-[10px] text-neutral-400 pl-1 font-sans">
                           {r.source === 'auto' && r.shiftCode ? `班別: ${r.shiftCode}` : (r.source === 'custom' ? '自訂' : '')}
                         </span>

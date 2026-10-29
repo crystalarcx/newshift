@@ -7,11 +7,27 @@ import { RecordTable } from './components/RecordTable';
 import { BookmarkletScriptModal } from './components/BookmarkletScriptModal';
 import { auth } from './lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { isWeekendOrHoliday } from './lib/holidays';
+import { isWeekendOrHoliday, getStoredCustomHolidays, saveStoredCustomHolidays } from './lib/holidays';
 
 export default function App() {
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
   const [isSecurityExpanded, setIsSecurityExpanded] = useState(false);
+  
+  // 使用者自訂假日 (含持久化儲存與記憶功能)
+  const [customHolidays, setCustomHolidays] = useState<string[]>(() => getStoredCustomHolidays());
+
+  const handleToggleCustomHoliday = (dateStr: string, isHoliday: boolean) => {
+    setCustomHolidays((prev) => {
+      let next: string[];
+      if (isHoliday) {
+        next = prev.includes(dateStr) ? prev : [...prev, dateStr];
+      } else {
+        next = prev.filter((d) => d !== dateStr);
+      }
+      saveStoredCustomHolidays(next);
+      return next;
+    });
+  };
   
   // 預設月份邏輯：
   // 6 號以前（含 6 號）：顯示上個月（例如 9/3 開啟顯示 8 月、1/5 開啟顯示前一年 12 月）
@@ -98,8 +114,8 @@ export default function App() {
   const currentMonthRecords = records.filter((r) => r.date.startsWith(targetMonth));
   
   const totalHours = Math.round(currentMonthRecords.reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10) / 10;
-  const weekdayHours = Math.round(currentMonthRecords.filter(r => !isWeekendOrHoliday(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10) / 10;
-  const weekendHours = Math.round(currentMonthRecords.filter(r => isWeekendOrHoliday(r.date)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10) / 10;
+  const weekdayHours = Math.round(currentMonthRecords.filter(r => !isWeekendOrHoliday(r.date, customHolidays)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10) / 10;
+  const weekendHours = Math.round(currentMonthRecords.filter(r => isWeekendOrHoliday(r.date, customHolidays)).reduce((sum, r) => sum + (Number(r.hours) || 0), 0) * 10) / 10;
 
   if (!hasAccess) {
     return (
@@ -229,6 +245,8 @@ export default function App() {
             employeeId={employeeId}
             setEmployeeId={setEmployeeId}
             user={user}
+            customHolidays={customHolidays}
+            onToggleCustomHoliday={handleToggleCustomHoliday}
           />
         )}
 
@@ -237,6 +255,7 @@ export default function App() {
           setRecords={setRecords}
           onOpenScriptModal={() => setIsScriptModalOpen(true)}
           targetMonth={targetMonth}
+          customHolidays={customHolidays}
         />
       </main>
 
@@ -245,6 +264,7 @@ export default function App() {
         isOpen={isScriptModalOpen}
         onClose={() => setIsScriptModalOpen(false)}
         employeeId={employeeId}
+        customHolidays={customHolidays}
       />
 
       <footer className="border-t border-neutral-200 bg-white py-8 text-center text-sm text-neutral-500">

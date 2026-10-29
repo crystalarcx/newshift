@@ -4,7 +4,7 @@ import { Calendar, Plus, Printer, CheckSquare, Square, Clock, AlertCircle, FileT
 import * as XLSX from 'xlsx';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
-import { isWeekendOrHoliday, isCustomHoliday, getHolidayName } from '../lib/holidays';
+import { isWeekendOrHoliday, isCustomHoliday, isUserCustomHoliday, getHolidayName, isWeekend } from '../lib/holidays';
 
 interface BatchGeneratorProps {
   records: OvertimeRecord[];
@@ -17,6 +17,8 @@ interface BatchGeneratorProps {
   employeeId: string;
   setEmployeeId: (id: string) => void;
   user: any;
+  customHolidays: string[];
+  onToggleCustomHoliday: (dateStr: string, isHoliday: boolean) => void;
 }
 
 export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
@@ -30,6 +32,8 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
   employeeId,
   setEmployeeId,
   user,
+  customHolidays,
+  onToggleCustomHoliday,
 }) => {
   const [overtimeType, setOvertimeType] = useState<OvertimeType>('延時加班');
   
@@ -390,20 +394,24 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
       dayOfWeek: number; 
       isWeekend: boolean;
       isHoliday: boolean;
+      isUserCustom: boolean;
       holidayName?: string;
     }[] = [];
     for (let d = 1; d <= daysInMonth; d++) {
       const dateObj = new Date(year, month - 1, d);
       const dayOfWeek = dateObj.getDay(); // 0 is Sun, 6 is Sat
       const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-      const isHoliday = isCustomHoliday(dateStr);
+      const isHoliday = isCustomHoliday(dateStr, customHolidays);
+      const isUserCustom = isUserCustomHoliday(dateStr, customHolidays);
+      const isWeekendDay = isWeekend(dateStr);
       days.push({
         dateStr,
         dayNum: d,
         dayOfWeek,
-        isWeekend: isWeekendOrHoliday(dateStr),
+        isWeekend: isHoliday || isWeekendDay,
         isHoliday,
-        holidayName: getHolidayName(dateStr),
+        isUserCustom,
+        holidayName: getHolidayName(dateStr, customHolidays),
       });
     }
     return days;
@@ -678,11 +686,14 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
                     {d.dayNum}
                     {d.isHoliday && (
                       <span 
-                        className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-amber-200' : 'bg-amber-500'}`} 
+                        className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-amber-200' : (d.isUserCustom ? 'bg-rose-500' : 'bg-amber-500')}`} 
                         title={d.holidayName || '假日'} 
                       />
                     )}
                   </span>
+                  {d.isUserCustom && !isSelected && !shift && (
+                    <span className="text-[9px] text-rose-600 font-bold leading-none mt-0.5">自訂假</span>
+                  )}
                   {shift && (
                     <span className={`text-[10px] mt-0.5 truncate max-w-full px-0.5 font-bold ${isSelected ? 'text-blue-100' : 'text-emerald-600'}`}>
                       {shift}
@@ -716,7 +727,61 @@ export const BatchGenerator: React.FC<BatchGeneratorProps> = ({
               </button>
             </div>
             
-            <div className="p-5 space-y-5 bg-neutral-50">
+            <div className="p-5 space-y-4 bg-neutral-50 max-h-[85vh] overflow-y-auto">
+              {/* 自訂為假日 勾選設定卡片 */}
+              {(() => {
+                const isHoliday = isWeekendOrHoliday(activeDateModal, customHolidays);
+                const isUserCustom = isUserCustomHoliday(activeDateModal, customHolidays);
+                const isWeekendDay = isWeekend(activeDateModal);
+
+                return (
+                  <div className={`border rounded-xl p-3.5 shadow-sm transition-all ${
+                    isHoliday ? 'bg-amber-50/90 border-amber-300' : 'bg-white border-neutral-200'
+                  }`}>
+                    <label className="flex items-center justify-between cursor-pointer select-none">
+                      <div className="flex items-start gap-2.5 pr-2">
+                        <div className={`p-2 rounded-lg mt-0.5 shrink-0 ${
+                          isHoliday ? 'bg-amber-100 text-amber-700' : 'bg-neutral-100 text-neutral-500'
+                        }`}>
+                          <Calendar className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold text-neutral-900 flex items-center gap-1.5 flex-wrap">
+                            <span>自訂為假日</span>
+                            {isUserCustom && (
+                              <span className="text-[10px] bg-rose-100 text-rose-700 font-bold px-1.5 py-0.2 rounded border border-rose-200">
+                                已設為自訂假日
+                              </span>
+                            )}
+                            {isWeekendDay && (
+                              <span className="text-[10px] bg-neutral-100 text-neutral-600 font-bold px-1.5 py-0.2 rounded">
+                                週末
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[11px] text-neutral-500 mt-0.5 leading-snug">
+                            {isWeekendDay
+                              ? '此日為週六或週日（預設即為假日，時數已計入假日時數）'
+                              : '勾選後該日設為假日，申報明細與時數統計同步更新為假日時數（具備記憶功能）'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="relative flex items-center shrink-0">
+                        <input
+                          type="checkbox"
+                          checked={isHoliday}
+                          disabled={isWeekendDay}
+                          onChange={(e) => {
+                            onToggleCustomHoliday(activeDateModal, e.target.checked);
+                          }}
+                          className="w-5 h-5 rounded border-neutral-300 text-amber-600 focus:ring-amber-500 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                        />
+                      </div>
+                    </label>
+                  </div>
+                );
+              })()}
+
               {shiftSchedule[activeDateModal] && (
                 <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 shadow-sm">
                   <div className="text-sm text-blue-800 mb-3 flex items-center gap-2">
